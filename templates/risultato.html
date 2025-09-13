@@ -18,8 +18,12 @@
   <h2>Classifica generale</h2>
   <table border="1">
     <tr><th>Pos</th><th>Giocatore</th><th>Punti Totali</th></tr>
-    {% for idx, item in enumerate(classifica_generale, start=1) %}
-      <tr><td>{{ idx }}</td><td>{{ item[0] }}</td><td>{{ '%.1f'|format(item[1]) }}</td></tr>
+    {% for item in classifica_generale %}
+      <tr>
+        <td>{{ loop.index }}</td>
+        <td>{{ item[0] }}</td>
+        <td>{{ '%.1f'|format(item[1]) }}</td>
+      </tr>
     {% endfor %}
   </table>
 
