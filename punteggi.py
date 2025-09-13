@@ -1,21 +1,23 @@
-def calcola_punteggio(posizione, sprint, pole, dnf):
-    # Base points (GP o Sprint)
-    base_gp = [25,18,15,12,10,8,6,4,2,1]
-    base_sprint = [8,7,6,5,4,3,2,1]
-
+def calcola_punteggio(dati):
     punti = 0
 
-    if dnf:
-        return -3  # malus DNF
+    # Bonus
+    if dati.get("pole"): punti += 2
+    if dati.get("fastest_lap"): punti += 1
+    if dati.get("driver_day"): punti += 1
+    if dati.get("fastest_pit"): punti += 2
+    if dati.get("back_to_points"): punti += 2
+    punti += 0.5 * int(dati.get("pos_gain", 0))
+    if dati.get("win"): punti += 3
+    if dati.get("podium"): punti += 2
 
-    if sprint:
-        if posizione <= len(base_sprint):
-            punti += base_sprint[posizione-1]
-    else:
-        if posizione <= len(base_gp):
-            punti += base_gp[posizione-1]
-
-    if pole:
-        punti += 2  # bonus pole
+    # Malus
+    if dati.get("dsq"): punti -= 5
+    if dati.get("dnf"): punti -= 3
+    if dati.get("pen_6"): punti -= 4
+    if dati.get("pen_5"): punti -= 3
+    if dati.get("last"): punti -= 2
+    if dati.get("q1"): punti -= 1
+    punti -= 0.5 * int(dati.get("pos_lost", 0))
 
     return punti
