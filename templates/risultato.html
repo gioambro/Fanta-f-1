@@ -1,24 +1,4 @@
-<!DOCTYPE html>
-<html lang="it">
-<head>
-    <meta charset="UTF-8">
-    <title>Risultati giornata</title>
-</head>
-<body>
-    <h1>Risultati giornata Fanta Formula 1</h1>
-    <table border="1">
-        <tr>
-            <th>Giocatore</th>
-            <th>Punteggio</th>
-        </tr>
-        {% for g, punti in risultati %}
-        <tr>
-            <td>{{g}}</td>
-            <td>{{punti}}</td>
-        </tr>
-        {% endfor %}
-    </table>
-    <br>
-    <a href="/">Torna alla home</a>
-</body>
-</html>
+<h1>Risultati giornata Fanta Formula 1</h1>
+{% if giornata %}
+    <h2>Giornata {{giornata}}</h2>
+{% endif %}
