@@ -15,6 +15,13 @@
             <tr><td>{{g}}</td><td>{{punti}}</td></tr>
             {% endfor %}
         </table>
+
+        <h2>Scontri diretti</h2>
+        <ul>
+        {% for g1, g2 in scontri %}
+            <li>{{g1}} vs {{g2}}</li>
+        {% endfor %}
+        </ul>
     {% endif %}
 
     {% if classifica_generale %}
@@ -28,5 +35,6 @@
     {% endif %}
 
     <br><a href="/">Torna alla home</a>
+    <br><a href="/classifica">Vai alla classifica generale</a>
 </body>
 </html>
