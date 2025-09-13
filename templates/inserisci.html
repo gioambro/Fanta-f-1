@@ -1,44 +1,115 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <meta charset="UTF-8">
-    <title>Inserisci risultati giornata</title>
+  <meta charset="utf-8" />
+  <title>Inserisci risultati giornata</title>
+  <style>
+    fieldset { padding:10px; margin-bottom:10px; }
+    label { display:block; margin:4px 0; }
+  </style>
 </head>
 <body>
-    <h1>Inserisci risultati giornata</h1>
+  <h1>Inserisci risultati giornata</h1>
 
-    <form action="{{ url_for('inserisci') }}" method="POST">
-        {% for i in range(1,7) %}
-        <fieldset>
-            <legend>Giocatore {{ i }}</legend>
-            <label>Posizione finale:
-                <input type="number" name="g{{i}}_pos" min="1" max="20">
-            </label><br>
-            <label>Griglia di partenza:
-                <input type="number" name="g{{i}}_griglia" min="1" max="20">
-            </label><br><br>
+  <!-- Form: punta all'endpoint 'inserisci' e usa POST -->
+  <form action="{{ url_for('inserisci') }}" method="POST" id="formGiornata">
+    {% for i in range(1,7) %}
+    <fieldset>
+      <legend>Giocatore {{ i }}</legend>
 
-            <!-- BONUS -->
-            <label><input type="checkbox" name="g{{i}}_pole"> Pole Position</label><br>
-            <label><input type="checkbox" name="g{{i}}_fastest_lap"> Giro Veloce</label><br>
-            <label><input type="checkbox" name="g{{i}}_driver_day"> Driver of the Day</label><br>
-            <label><input type="checkbox" name="g{{i}}_fastest_pit"> Fastest Pit Stop</label><br>
-            <label><input type="checkbox" name="g{{i}}_last_rows_points"> Partiva in fondo e va a punti</label><br>
+      {% for p in range(1,3) %}
+      <h4>Pilota {{ p }}</h4>
+      <label>Posizione finale:
+        <input type="number" min="1" max="20"
+               name="g{{i}}_p{{p}}_pos" id="g{{i}}_p{{p}}_pos">
+      </label>
 
-            <!-- MALUS -->
-            <label><input type="checkbox" name="g{{i}}_squalifica"> Squalifica</label><br>
-            <label><input type="checkbox" name="g{{i}}_dnf"> DNF</label><br>
-            <label><input type="checkbox" name="g{{i}}_pen_6"> Penalità ≥ 6s</label><br>
-            <label><input type="checkbox" name="g{{i}}_pen_5"> Penalità ≤ 5s</label><br>
-            <label><input type="checkbox" name="g{{i}}_last_place"> Ultimo in gara</label><br>
-            <label><input type="checkbox" name="g{{i}}_no_q1"> Non supera Q1</label><br>
-        </fieldset>
-        <br>
-        {% endfor %}
+      <label>Griglia di partenza:
+        <input type="number" min="1" max="20"
+               name="g{{i}}_p{{p}}_griglia" id="g{{i}}_p{{p}}_griglia">
+      </label>
 
-        <button type="submit">Calcola risultati</button>
-    </form>
+      <!-- Sprint: se è sprint allora vittoria/podio NON valgono -->
+      <label><input type="checkbox" name="g{{i}}_p{{p}}_sprint" id="g{{i}}_p{{p}}_sprint"> Gara Sprint</label>
 
-    <p><a href="{{ url_for('home') }}">Torna alla home</a></p>
+      <!-- BONUS -->
+      <label><input type="checkbox" name="g{{i}}_p{{p}}_pole" id="g{{i}}_p{{p}}_pole"> Pole Position (+2)</label>
+      <label><input type="checkbox" name="g{{i}}_p{{p}}_fastest_lap" id="g{{i}}_p{{p}}_fastest_lap"> Giro veloce (+1)</label>
+      <label><input type="checkbox" name="g{{i}}_p{{p}}_driver_day" id="g{{i}}_p{{p}}_driver_day"> Driver of the Day (+1)</label>
+      <label><input type="checkbox" name="g{{i}}_p{{p}}_fastest_pit" id="g{{i}}_p{{p}}_fastest_pit"> Fastest pit (+2)</label>
+      <label><input type="checkbox" name="g{{i}}_p{{p}}_last_rows_points" id="g{{i}}_p{{p}}_last_rows_points"> Parte dalle ultime due file e va a punti (+2)</label>
+
+      <label>Posizioni guadagnate:
+        <input type="number" min="0" value="0"
+               name="g{{i}}_p{{p}}_pos_gain" id="g{{i}}_p{{p}}_pos_gain">
+      </label>
+
+      <!-- Vittoria / Podio (auto-selezione dallo script) -->
+      <label><input type="checkbox" name="g{{i}}_p{{p}}_win" id="g{{i}}_p{{p}}_win"> Vittoria GP (+3)</label>
+      <label><input type="checkbox" name="g{{i}}_p{{p}}_podium" id="g{{i}}_p{{p}}_podium"> Podio GP (2°/3°) (+2)</label>
+
+      <!-- MALUS -->
+      <label><input type="checkbox" name="g{{i}}_p{{p}}_dsq" id="g{{i}}_p{{p}}_dsq"> Squalifica (-5)</label>
+      <label><input type="checkbox" name="g{{i}}_p{{p}}_dnf" id="g{{i}}_p{{p}}_dnf"> DNF (-3)</label>
+      <label><input type="checkbox" name="g{{i}}_p{{p}}_pen_6" id="g{{i}}_p{{p}}_pen_6"> Penalità ≥6s (-4)</label>
+      <label><input type="checkbox" name="g{{i}}_p{{p}}_pen_5" id="g{{i}}_p{{p}}_pen_5"> Penalità ≤5s (-3)</label>
+      <label><input type="checkbox" name="g{{i}}_p{{p}}_last_place" id="g{{i}}_p{{p}}_last_place"> Ultimo in gara (-2)</label>
+      <label><input type="checkbox" name="g{{i}}_p{{p}}_no_q1" id="g{{i}}_p{{p}}_no_q1"> Non supera Q1 (-1)</label>
+
+      <hr>
+      {% endfor %}
+    </fieldset>
+    {% endfor %}
+
+    <button type="submit">Calcola risultati</button>
+  </form>
+
+  <script>
+    // Auto-selezione Vittoria/Podio
+    function setupAutoSelect() {
+      for (let g = 1; g <= 6; g++) {
+        for (let p = 1; p <= 2; p++) {
+          const posEl = document.getElementById(`g${g}_p${p}_pos`);
+          const sprintEl = document.getElementById(`g${g}_p${p}_sprint`);
+          const winEl = document.getElementById(`g${g}_p${p}_win`);
+          const podiumEl = document.getElementById(`g${g}_p${p}_podium`);
+
+          if (!posEl) continue;
+
+          const update = () => {
+            const val = parseInt(posEl.value);
+            const isSprint = sprintEl && sprintEl.checked;
+
+            if (isSprint) {
+              // in Sprint non auto-selezionare vittoria/podio
+              return;
+            }
+
+            if (!isNaN(val)) {
+              if (val === 1) {
+                winEl.checked = true;
+                podiumEl.checked = false;
+              } else if (val === 2 || val === 3) {
+                podiumEl.checked = true;
+                winEl.checked = false;
+              } else {
+                winEl.checked = false;
+                podiumEl.checked = false;
+              }
+            } else {
+              winEl.checked = false;
+              podiumEl.checked = false;
+            }
+          };
+
+          posEl.addEventListener('input', update);
+          if (sprintEl) sprintEl.addEventListener('change', update);
+        }
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', setupAutoSelect);
+  </script>
+
 </body>
 </html>
