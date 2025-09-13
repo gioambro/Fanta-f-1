@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Fanta F1</title>
+  </head>
+  <body>
+    <h1>Calcolo punteggi Fanta Formula 1</h1>
+    <form action="/calcola" method="post">
+      <label>Posizione finale: </label>
+      <input type="number" name="posizione" min="1" max="20"><br><br>
+
+      <label>Sprint? </label>
+      <input type="checkbox" name="sprint"><br>
+
+      <label>Pole Position? </label>
+      <input type="checkbox" name="pole"><br>
+
+      <label>DNF (non finisce la gara)? </label>
+      <input type="checkbox" name="dnf"><br><br>
+
+      <button type="submit">Calcola</button>
+    </form>
+  </body>
+</html>
