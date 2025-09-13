@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Inserisci risultati giornata</title>
+</head>
+<body>
+    <h1>Inserisci risultati giornata</h1>
+
+    <form action="{{ url_for('inserisci') }}" method="POST">
+        {% for i in range(1,7) %}
+        <fieldset>
+            <legend>Giocatore {{ i }}</legend>
+            <label>Posizione finale:
+                <input type="number" name="g{{i}}_pos" min="1" max="20">
+            </label><br>
+            <label>Griglia di partenza:
+                <input type="number" name="g{{i}}_griglia" min="1" max="20">
+            </label><br><br>
+
+            <!-- BONUS -->
+            <label><input type="checkbox" name="g{{i}}_pole"> Pole Position</label><br>
+            <label><input type="checkbox" name="g{{i}}_fastest_lap"> Giro Veloce</label><br>
+            <label><input type="checkbox" name="g{{i}}_driver_day"> Driver of the Day</label><br>
+            <label><input type="checkbox" name="g{{i}}_fastest_pit"> Fastest Pit Stop</label><br>
+            <label><input type="checkbox" name="g{{i}}_last_rows_points"> Partiva in fondo e va a punti</label><br>
+
+            <!-- MALUS -->
+            <label><input type="checkbox" name="g{{i}}_squalifica"> Squalifica</label><br>
+            <label><input type="checkbox" name="g{{i}}_dnf"> DNF</label><br>
+            <label><input type="checkbox" name="g{{i}}_pen_6"> Penalità ≥ 6s</label><br>
+            <label><input type="checkbox" name="g{{i}}_pen_5"> Penalità ≤ 5s</label><br>
+            <label><input type="checkbox" name="g{{i}}_last_place"> Ultimo in gara</label><br>
+            <label><input type="checkbox" name="g{{i}}_no_q1"> Non supera Q1</label><br>
+        </fieldset>
+        <br>
+        {% endfor %}
+
+        <button type="submit">Calcola risultati</button>
+    </form>
+
+    <p><a href="{{ url_for('home') }}">Torna alla home</a></p>
+</body>
+</html>
