@@ -1,57 +1,32 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8">
-  <title>Fanta F1 - Inserisci giornata</title>
+    <meta charset="UTF-8">
+    <title>Calcolo punteggi Fanta Formula 1</title>
 </head>
 <body>
-  <h1>Fanta Formula 1 - Inserisci i dati della giornata</h1>
-  <form action="/calcola" method="post">
+    <h1>Inserisci risultati giornata</h1>
 
-    {% for g in range(1, 7) %}
-      <fieldset>
-        <legend>Giocatore {{ g }}</legend>
+    <form action="/calcola" method="post">
+        {% for g in range(1, 7) %}
+        <fieldset>
+            <legend>Giocatore {{ g }}</legend>
+            Posizione finale: 
+            <input type="number" name="g{{g}}_pos" min="1" max="20"><br>
 
-        <h3>Pilota 1</h3>
-        <label>Posizione finale: </label>
-        <input type="number" name="g{{g}}_p1_posizione" min="1" max="20"><br>
-        <label>Sprint? </label><input type="checkbox" name="g{{g}}_p1_sprint"><br>
-        <label>Pole? </label><input type="checkbox" name="g{{g}}_p1_pole"><br>
-        <label>Fastest lap? </label><input type="checkbox" name="g{{g}}_p1_fastest_lap"><br>
-        <label>Driver of the day? </label><input type="checkbox" name="g{{g}}_p1_driver"><br>
-        <label>Fastest pit stop? </label><input type="checkbox" name="g{{g}}_p1_pitstop"><br>
-        <label>Posizioni guadagnate: </label><input type="number" name="g{{g}}_p1_gain" value="0"><br>
-        <label>Posizioni perse: </label><input type="number" name="g{{g}}_p1_loss" value="0"><br>
-        <label>DNF? </label><input type="checkbox" name="g{{g}}_p1_dnf"><br>
-        <label>Squalifica? </label><input type="checkbox" name="g{{g}}_p1_squal"><br>
-        <label>Penalità ≥6s? </label><input type="checkbox" name="g{{g}}_p1_pen_grave"><br>
-        <label>Penalità ≤5s? </label><input type="checkbox" name="g{{g}}_p1_pen_leggera"><br>
-        <label>Ultimo? </label><input type="checkbox" name="g{{g}}_p1_last"><br>
-        <label>Vittoria GP? </label><input type="checkbox" name="g{{g}}_p1_win"><br>
-        <label>Podio GP? </label><input type="checkbox" name="g{{g}}_p1_podio"><br>
+            Sprint? 
+            <input type="checkbox" name="g{{g}}_sprint" value="1"><br>
 
-        <h3>Pilota 2</h3>
-        <label>Posizione finale: </label>
-        <input type="number" name="g{{g}}_p2_posizione" min="1" max="20"><br>
-        <label>Sprint? </label><input type="checkbox" name="g{{g}}_p2_sprint"><br>
-        <label>Pole? </label><input type="checkbox" name="g{{g}}_p2_pole"><br>
-        <label>Fastest lap? </label><input type="checkbox" name="g{{g}}_p2_fastest_lap"><br>
-        <label>Driver of the day? </label><input type="checkbox" name="g{{g}}_p2_driver"><br>
-        <label>Fastest pit stop? </label><input type="checkbox" name="g{{g}}_p2_pitstop"><br>
-        <label>Posizioni guadagnate: </label><input type="number" name="g{{g}}_p2_gain" value="0"><br>
-        <label>Posizioni perse: </label><input type="number" name="g{{g}}_p2_loss" value="0"><br>
-        <label>DNF? </label><input type="checkbox" name="g{{g}}_p2_dnf"><br>
-        <label>Squalifica? </label><input type="checkbox" name="g{{g}}_p2_squal"><br>
-        <label>Penalità ≥6s? </label><input type="checkbox" name="g{{g}}_p2_pen_grave"><br>
-        <label>Penalità ≤5s? </label><input type="checkbox" name="g{{g}}_p2_pen_leggera"><br>
-        <label>Ultimo? </label><input type="checkbox" name="g{{g}}_p2_last"><br>
-        <label>Vittoria GP? </label><input type="checkbox" name="g{{g}}_p2_win"><br>
-        <label>Podio GP? </label><input type="checkbox" name="g{{g}}_p2_podio"><br>
-      </fieldset>
-      <br>
-    {% endfor %}
+            Pole Position? 
+            <input type="checkbox" name="g{{g}}_pole" value="1"><br>
 
-    <button type="submit">Calcola giornata</button>
-  </form>
+            DNF (non finisce la gara)? 
+            <input type="checkbox" name="g{{g}}_dnf" value="1"><br>
+        </fieldset>
+        <br>
+        {% endfor %}
+
+        <button type="submit">Calcola</button>
+    </form>
 </body>
 </html>
