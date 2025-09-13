@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request
 
 app = Flask(__name__)
 
@@ -10,19 +10,12 @@ classifica_generale = {f"Giocatore {i}": 0 for i in range(1, 7)}
 # FUNZIONI DI CALCOLO
 # ----------------------------
 def calcola_sprint(posizione):
-    """Restituisce i punti in base alla posizione Sprint"""
-    if posizione == 1: return 8
-    elif posizione == 2: return 7
-    elif posizione == 3: return 6
-    elif posizione == 4: return 5
-    elif posizione == 5: return 4
-    elif posizione == 6: return 3
-    elif posizione == 7: return 2
-    elif posizione == 8: return 1
-    else: return 0
+    """Restituisce i punti Sprint in base alla posizione"""
+    punti_sprint = {1: 8, 2: 7, 3: 6, 4: 5, 5: 4, 6: 3, 7: 2, 8: 1}
+    return punti_sprint.get(posizione, 0)
 
 def calcola_punteggio(dati):
-    """Calcola il punteggio totale del giocatore in base ai dati del form"""
+    """Calcola i punti GP + Sprint"""
     punti = 0
 
     # --- Posizione finale GP ---
@@ -78,7 +71,6 @@ def inserisci():
     global classifiche_giornate, classifica_generale
 
     if request.method == "POST":
-        risultati = {}
         classifica_giornata = {}
 
         for g in range(1, 7):
@@ -95,14 +87,12 @@ def inserisci():
                 "pen_5": request.form.get(f"g{g}_pen_5"),
                 "ultimo": request.form.get(f"g{g}_ultimo"),
                 "no_q1": request.form.get(f"g{g}_no_q1"),
-                "sprint_flag": request.form.get(f"g{g}_sprint_si"),
+                "sprint_flag": request.form.get(f"g{g}_sprint_flag"),
                 "sprint_pos": request.form.get(f"g{g}_sprint_pos")
             }
 
             punti = calcola_punteggio(dati)
             giocatore = f"Giocatore {g}"
-
-            risultati[giocatore] = dati
             classifica_giornata[giocatore] = punti
             classifica_generale[giocatore] += punti
 
@@ -121,8 +111,5 @@ def inserisci():
 def classifica():
     return render_template("classifica.html", classifica_generale=classifica_generale)
 
-# ----------------------------
-# MAIN
-# ----------------------------
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
