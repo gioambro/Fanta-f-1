@@ -5,36 +5,34 @@
     <title>Risultati giornata</title>
 </head>
 <body>
-    <h1>Risultati giornata Fanta Formula 1</h1>
-    
-    {% if giornata %}
-        <h2>Classifica giornata {{giornata}}</h2>
-        <table border="1">
-            <tr><th>Giocatore</th><th>Punteggio</th></tr>
-            {% for g, punti in risultati %}
-            <tr><td>{{g}}</td><td>{{punti}}</td></tr>
-            {% endfor %}
-        </table>
-
-        <h2>Scontri diretti</h2>
-        <ul>
-        {% for g1, g2 in scontri %}
-            <li>{{g1}} vs {{g2}}</li>
+    <h1>Classifica giornata</h1>
+    <table border="1">
+        <tr>
+            <th>Giocatore</th>
+            <th>Punteggio</th>
+        </tr>
+        {% for g, p in giornata.items() %}
+        <tr>
+            <td>{{ g }}</td>
+            <td>{{ p }}</td>
+        </tr>
         {% endfor %}
-        </ul>
-    {% endif %}
+    </table>
 
-    {% if classifica_generale %}
-        <h2>Classifica Generale</h2>
-        <table border="1">
-            <tr><th>Giocatore</th><th>Punti Totali</th></tr>
-            {% for g, punti in classifica_generale %}
-            <tr><td>{{g}}</td><td>{{punti}}</td></tr>
-            {% endfor %}
-        </table>
-    {% endif %}
+    <h2>Classifica Generale</h2>
+    <table border="1">
+        <tr>
+            <th>Giocatore</th>
+            <th>Punti Totali</th>
+        </tr>
+        {% for g, p in classifica_generale.items() %}
+        <tr>
+            <td>{{ g }}</td>
+            <td>{{ p }}</td>
+        </tr>
+        {% endfor %}
+    </table>
 
-    <br><a href="/">Torna alla home</a>
-    <br><a href="/classifica">Vai alla classifica generale</a>
+    <p><a href="{{ url_for('home') }}">Torna alla home</a></p>
 </body>
 </html>
