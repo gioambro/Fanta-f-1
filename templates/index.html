@@ -2,58 +2,56 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <title>Fanta F1</title>
+  <title>Fanta F1 - Inserisci giornata</title>
 </head>
 <body>
-  <h1>Calcolo punteggi Fanta Formula 1</h1>
+  <h1>Fanta Formula 1 - Inserisci i dati della giornata</h1>
   <form action="/calcola" method="post">
 
-    <label>Posizione finale: </label>
-    <input type="number" name="posizione" min="1" max="20"><br><br>
+    {% for g in range(1, 7) %}
+      <fieldset>
+        <legend>Giocatore {{ g }}</legend>
 
-    <label>Gara Sprint? </label>
-    <input type="checkbox" name="sprint"><br>
+        <h3>Pilota 1</h3>
+        <label>Posizione finale: </label>
+        <input type="number" name="g{{g}}_p1_posizione" min="1" max="20"><br>
+        <label>Sprint? </label><input type="checkbox" name="g{{g}}_p1_sprint"><br>
+        <label>Pole? </label><input type="checkbox" name="g{{g}}_p1_pole"><br>
+        <label>Fastest lap? </label><input type="checkbox" name="g{{g}}_p1_fastest_lap"><br>
+        <label>Driver of the day? </label><input type="checkbox" name="g{{g}}_p1_driver"><br>
+        <label>Fastest pit stop? </label><input type="checkbox" name="g{{g}}_p1_pitstop"><br>
+        <label>Posizioni guadagnate: </label><input type="number" name="g{{g}}_p1_gain" value="0"><br>
+        <label>Posizioni perse: </label><input type="number" name="g{{g}}_p1_loss" value="0"><br>
+        <label>DNF? </label><input type="checkbox" name="g{{g}}_p1_dnf"><br>
+        <label>Squalifica? </label><input type="checkbox" name="g{{g}}_p1_squal"><br>
+        <label>Penalità ≥6s? </label><input type="checkbox" name="g{{g}}_p1_pen_grave"><br>
+        <label>Penalità ≤5s? </label><input type="checkbox" name="g{{g}}_p1_pen_leggera"><br>
+        <label>Ultimo? </label><input type="checkbox" name="g{{g}}_p1_last"><br>
+        <label>Vittoria GP? </label><input type="checkbox" name="g{{g}}_p1_win"><br>
+        <label>Podio GP? </label><input type="checkbox" name="g{{g}}_p1_podio"><br>
 
-    <label>Pole Position? </label>
-    <input type="checkbox" name="pole"><br>
+        <h3>Pilota 2</h3>
+        <label>Posizione finale: </label>
+        <input type="number" name="g{{g}}_p2_posizione" min="1" max="20"><br>
+        <label>Sprint? </label><input type="checkbox" name="g{{g}}_p2_sprint"><br>
+        <label>Pole? </label><input type="checkbox" name="g{{g}}_p2_pole"><br>
+        <label>Fastest lap? </label><input type="checkbox" name="g{{g}}_p2_fastest_lap"><br>
+        <label>Driver of the day? </label><input type="checkbox" name="g{{g}}_p2_driver"><br>
+        <label>Fastest pit stop? </label><input type="checkbox" name="g{{g}}_p2_pitstop"><br>
+        <label>Posizioni guadagnate: </label><input type="number" name="g{{g}}_p2_gain" value="0"><br>
+        <label>Posizioni perse: </label><input type="number" name="g{{g}}_p2_loss" value="0"><br>
+        <label>DNF? </label><input type="checkbox" name="g{{g}}_p2_dnf"><br>
+        <label>Squalifica? </label><input type="checkbox" name="g{{g}}_p2_squal"><br>
+        <label>Penalità ≥6s? </label><input type="checkbox" name="g{{g}}_p2_pen_grave"><br>
+        <label>Penalità ≤5s? </label><input type="checkbox" name="g{{g}}_p2_pen_leggera"><br>
+        <label>Ultimo? </label><input type="checkbox" name="g{{g}}_p2_last"><br>
+        <label>Vittoria GP? </label><input type="checkbox" name="g{{g}}_p2_win"><br>
+        <label>Podio GP? </label><input type="checkbox" name="g{{g}}_p2_podio"><br>
+      </fieldset>
+      <br>
+    {% endfor %}
 
-    <label>Giro veloce? </label>
-    <input type="checkbox" name="fastest_lap"><br>
-
-    <label>Driver of the day? </label>
-    <input type="checkbox" name="driver_of_the_day"><br>
-
-    <label>Fastest pit stop? </label>
-    <input type="checkbox" name="fastest_pitstop"><br>
-
-    <label>Posizioni guadagnate: </label>
-    <input type="number" name="posizioni_guadagnate" value="0"><br>
-
-    <label>Posizioni perse: </label>
-    <input type="number" name="posizioni_perse" value="0"><br>
-
-    <label>DNF (non finisce la gara)? </label>
-    <input type="checkbox" name="dnf"><br>
-
-    <label>Squalifica? </label>
-    <input type="checkbox" name="squalifica"><br>
-
-    <label>Penalità ≥ 6 secondi? </label>
-    <input type="checkbox" name="penalita_grave"><br>
-
-    <label>Penalità ≤ 5 secondi? </label>
-    <input type="checkbox" name="penalita_leggera"><br>
-
-    <label>Ultimo in gara? </label>
-    <input type="checkbox" name="ultimo"><br>
-
-    <label>Vittoria GP? </label>
-    <input type="checkbox" name="vittoria"><br>
-
-    <label>Podio (2°/3° GP)? </label>
-    <input type="checkbox" name="podio"><br><br>
-
-    <button type="submit">Calcola</button>
+    <button type="submit">Calcola giornata</button>
   </form>
 </body>
 </html>
