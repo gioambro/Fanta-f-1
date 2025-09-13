@@ -22,52 +22,54 @@
     <fieldset>
       <legend>Giocatore {{ g }}</legend>
 
+      {% for p in range(1,3) %}
+      <h3>Pilota {{ p }}</h3>
       <label>Griglia di partenza:</label>
-      <input type="number" name="g{{g}}_griglia" min="1"><br>
+      <input type="number" name="g{{g}}_p{{p}}_griglia" min="1"><br>
 
       <label>Posizione finale:</label>
-      <input type="number" name="g{{g}}_pos" min="1"><br>
+      <input type="number" name="g{{g}}_p{{p}}_pos" min="1"><br>
 
       <label>Pole?</label>
-      <input type="checkbox" name="g{{g}}_pole"><br>
+      <input type="checkbox" name="g{{g}}_p{{p}}_pole"><br>
 
       <label>Giro veloce?</label>
-      <input type="checkbox" name="g{{g}}_fastest_lap"><br>
+      <input type="checkbox" name="g{{g}}_p{{p}}_fastest_lap"><br>
 
       <label>Driver of the day?</label>
-      <input type="checkbox" name="g{{g}}_driver_day"><br>
+      <input type="checkbox" name="g{{g}}_p{{p}}_driver_day"><br>
 
       <label>Fastest pit-stop?</label>
-      <input type="checkbox" name="g{{g}}_fastest_pit"><br>
+      <input type="checkbox" name="g{{g}}_p{{p}}_fastest_pit"><br>
 
       <label>DNF?</label>
-      <input type="checkbox" name="g{{g}}_dnf"><br>
+      <input type="checkbox" name="g{{g}}_p{{p}}_dnf"><br>
 
       <label>Squalifica?</label>
-      <input type="checkbox" name="g{{g}}_squalifica"><br>
+      <input type="checkbox" name="g{{g}}_p{{p}}_squalifica"><br>
 
       <label>Penalità ≥ 6s?</label>
-      <input type="checkbox" name="g{{g}}_pen_6"><br>
+      <input type="checkbox" name="g{{g}}_p{{p}}_pen_6"><br>
 
       <label>Penalità ≤ 5s?</label>
-      <input type="checkbox" name="g{{g}}_pen_5"><br>
+      <input type="checkbox" name="g{{g}}_p{{p}}_pen_5"><br>
 
       <label>Ultimo in gara?</label>
-      <input type="checkbox" name="g{{g}}_ultimo"><br>
+      <input type="checkbox" name="g{{g}}_p{{p}}_ultimo"><br>
 
       <label>Non supera Q1?</label>
-      <input type="checkbox" name="g{{g}}_no_q1"><br>
+      <input type="checkbox" name="g{{g}}_p{{p}}_no_q1"><br>
 
       <!-- Sprint -->
       <label>Sprint Race?</label>
-      <select name="g{{g}}_sprint_flag" id="g{{g}}_sprint_flag" onchange="toggleSprint('g{{g}}')">
+      <select name="g{{g}}_p{{p}}_sprint_flag" id="g{{g}}_p{{p}}_sprint_flag" onchange="toggleSprint('g{{g}}_p{{p}}')">
         <option value="no">No</option>
         <option value="si">Sì</option>
       </select>
 
-      <div id="g{{g}}_sprint_box" style="display:none; margin-top:10px;">
+      <div id="g{{g}}_p{{p}}_sprint_box" style="display:none; margin-top:10px;">
         <label>Posizione Sprint:</label>
-        <select name="g{{g}}_sprint_pos">
+        <select name="g{{g}}_p{{p}}_sprint_pos">
           <option value="">--</option>
           <option value="1">1°</option>
           <option value="2">2°</option>
@@ -79,7 +81,8 @@
           <option value="8">8°</option>
         </select>
       </div>
-
+      <hr>
+      {% endfor %}
     </fieldset>
     <br>
     {% endfor %}
