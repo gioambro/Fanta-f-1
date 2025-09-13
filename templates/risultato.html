@@ -6,22 +6,27 @@
 </head>
 <body>
     <h1>Risultati giornata Fanta Formula 1</h1>
+    
     {% if giornata %}
-        <h2>Giornata {{giornata}}</h2>
+        <h2>Classifica giornata {{giornata}}</h2>
+        <table border="1">
+            <tr><th>Giocatore</th><th>Punteggio</th></tr>
+            {% for g, punti in risultati %}
+            <tr><td>{{g}}</td><td>{{punti}}</td></tr>
+            {% endfor %}
+        </table>
     {% endif %}
-    <table border="1">
-        <tr>
-            <th>Giocatore</th>
-            <th>Punteggio</th>
-        </tr>
-        {% for g, punti in risultati %}
-        <tr>
-            <td>{{g}}</td>
-            <td>{{punti}}</td>
-        </tr>
-        {% endfor %}
-    </table>
-    <br>
-    <a href="/">Torna alla home</a>
+
+    {% if classifica_generale %}
+        <h2>Classifica Generale</h2>
+        <table border="1">
+            <tr><th>Giocatore</th><th>Punti Totali</th></tr>
+            {% for g, punti in classifica_generale %}
+            <tr><td>{{g}}</td><td>{{punti}}</td></tr>
+            {% endfor %}
+        </table>
+    {% endif %}
+
+    <br><a href="/">Torna alla home</a>
 </body>
 </html>
