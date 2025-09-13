@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request
 from punteggi import calcola_punteggio
-import json, os
+import json, os, itertools
 
 app = Flask(__name__)
 STORICO_FILE = "storico.json"
@@ -14,6 +14,23 @@ def carica_storico():
 def salva_storico(storico):
     with open(STORICO_FILE, "w") as f:
         json.dump(storico, f, indent=4)
+
+def calcola_classifica_generale(storico):
+    totale_generale = {f"Giocatore {i}": 0 for i in range(1,7)}
+    for giornata in storico:
+        for g in range(1,7):
+            totale_generale[f"Giocatore {g}"] += giornata.get(f"Giocatore {g}", 0)
+    return sorted(totale_generale.items(), key=lambda x: x[1], reverse=True)
+
+# Genera le coppie 1vs1 (per ora sequenziali, es: G1 vs G2, G3 vs G4, G5 vs G6)
+def genera_scontri(giornata):
+    giocatori = [f"Giocatore {i}" for i in range(1,7)]
+    # Rotazione per avere scontri diversi nelle giornate
+    rotazione = giocatori[1:]
+    rotazione = rotazione[giornata % len(rotazione):] + rotazione[:giornata % len(rotazione)]
+    abbinati = [giocatori[0]] + rotazione
+    scontri = [(abbinati[i], abbinati[i+1]) for i in range(0, 6, 2)]
+    return scontri
 
 @app.route("/", methods=["GET", "POST"])
 def home():
@@ -62,23 +79,24 @@ def home():
         salva_storico(storico)
 
         # Calcola classifica generale
-        totale_generale = {f"Giocatore {i}": 0 for i in range(1,7)}
-        for giornata in storico:
-            for g in range(1,7):
-                totale_generale[f"Giocatore {g}"] += giornata.get(f"Giocatore {g}", 0)
+        classifica_generale = calcola_classifica_generale(storico)
 
-        classifica_generale = sorted(totale_generale.items(), key=lambda x: x[1], reverse=True)
+        # Genera scontri per la giornata
+        scontri = genera_scontri(giornata)
 
         return render_template("risultato.html", 
                                risultati=risultati, 
                                giornata=giornata,
-                               classifica_generale=classifica_generale)
+                               classifica_generale=classifica_generale,
+                               scontri=scontri)
 
     return render_template("index.html")
 
-@app.route("/risultato")
-def risultato():
-    return render_template("risultato.html", risultati=[], classifica_generale=[])
+@app.route("/classifica")
+def classifica():
+    storico = carica_storico()
+    classifica_generale = calcola_classifica_generale(storico)
+    return render_template("classifica.html", classifica_generale=classifica_generale)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
