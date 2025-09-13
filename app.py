@@ -15,7 +15,7 @@ def calcola_sprint(posizione):
     return punti_sprint.get(posizione, 0)
 
 def calcola_punteggio(dati):
-    """Calcola i punti GP + Sprint"""
+    """Calcola i punti GP + Sprint per un pilota"""
     punti = 0
 
     # --- Posizione finale GP ---
@@ -74,27 +74,33 @@ def inserisci():
         classifica_giornata = {}
 
         for g in range(1, 7):
-            dati = {
-                "posizione": request.form.get(f"g{g}_pos"),
-                "griglia": request.form.get(f"g{g}_griglia"),
-                "pole": request.form.get(f"g{g}_pole"),
-                "fastest_lap": request.form.get(f"g{g}_fastest_lap"),
-                "driver_day": request.form.get(f"g{g}_driver_day"),
-                "fastest_pit": request.form.get(f"g{g}_fastest_pit"),
-                "dnf": request.form.get(f"g{g}_dnf"),
-                "squalifica": request.form.get(f"g{g}_squalifica"),
-                "pen_6": request.form.get(f"g{g}_pen_6"),
-                "pen_5": request.form.get(f"g{g}_pen_5"),
-                "ultimo": request.form.get(f"g{g}_ultimo"),
-                "no_q1": request.form.get(f"g{g}_no_q1"),
-                "sprint_flag": request.form.get(f"g{g}_sprint_flag"),
-                "sprint_pos": request.form.get(f"g{g}_sprint_pos")
-            }
+            totale_giocatore = 0
 
-            punti = calcola_punteggio(dati)
+            # Calcolo per 2 piloti
+            for p in range(1, 3):
+                dati = {
+                    "posizione": request.form.get(f"g{g}_p{p}_pos"),
+                    "griglia": request.form.get(f"g{g}_p{p}_griglia"),
+                    "pole": request.form.get(f"g{g}_p{p}_pole"),
+                    "fastest_lap": request.form.get(f"g{g}_p{p}_fastest_lap"),
+                    "driver_day": request.form.get(f"g{g}_p{p}_driver_day"),
+                    "fastest_pit": request.form.get(f"g{g}_p{p}_fastest_pit"),
+                    "dnf": request.form.get(f"g{g}_p{p}_dnf"),
+                    "squalifica": request.form.get(f"g{g}_p{p}_squalifica"),
+                    "pen_6": request.form.get(f"g{g}_p{p}_pen_6"),
+                    "pen_5": request.form.get(f"g{g}_p{p}_pen_5"),
+                    "ultimo": request.form.get(f"g{g}_p{p}_ultimo"),
+                    "no_q1": request.form.get(f"g{g}_p{p}_no_q1"),
+                    "sprint_flag": request.form.get(f"g{g}_p{p}_sprint_flag"),
+                    "sprint_pos": request.form.get(f"g{g}_p{p}_sprint_pos")
+                }
+
+                punti_pilota = calcola_punteggio(dati)
+                totale_giocatore += punti_pilota
+
             giocatore = f"Giocatore {g}"
-            classifica_giornata[giocatore] = punti
-            classifica_generale[giocatore] += punti
+            classifica_giornata[giocatore] = totale_giocatore
+            classifica_generale[giocatore] += totale_giocatore
 
         classifiche_giornate.append(classifica_giornata)
 
