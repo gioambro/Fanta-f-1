@@ -6,21 +6,19 @@
 </head>
 <body>
     <h1>Risultati giornata Fanta Formula 1</h1>
-
-    <table border="1" cellpadding="5">
+    <table border="1">
         <tr>
             <th>Giocatore</th>
             <th>Punteggio</th>
         </tr>
-        {% for g, p in punteggi.items() %}
+        {% for g, punti in risultati %}
         <tr>
-            <td>{{ g }}</td>
-            <td>{{ p }}</td>
+            <td>{{g}}</td>
+            <td>{{punti}}</td>
         </tr>
         {% endfor %}
     </table>
-
     <br>
-    <a href="/">⬅️ Torna alla home</a>
+    <a href="/">Torna alla home</a>
 </body>
 </html>
