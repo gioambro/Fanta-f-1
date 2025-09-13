@@ -2,31 +2,41 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <title>Calcolo punteggi Fanta Formula 1</title>
+    <title>Inserisci risultati giornata</title>
 </head>
 <body>
     <h1>Inserisci risultati giornata</h1>
+    <form method="post">
 
-    <form action="/calcola" method="post">
-        {% for g in range(1, 7) %}
+        {% for g in range(1,7) %}
         <fieldset>
-            <legend>Giocatore {{ g }}</legend>
-            Posizione finale: 
-            <input type="number" name="g{{g}}_pos" min="1" max="20"><br>
+            <legend>Giocatore {{g}}</legend>
 
-            Sprint? 
-            <input type="checkbox" name="g{{g}}_sprint" value="1"><br>
+            Posizione finale: <input type="number" name="g{{g}}_pos" min="1" max="20"><br><br>
 
-            Pole Position? 
-            <input type="checkbox" name="g{{g}}_pole" value="1"><br>
+            <!-- Bonus -->
+            Pole in qualifica GP (+2): <input type="checkbox" name="g{{g}}_pole"><br>
+            Giro veloce in gara (+1): <input type="checkbox" name="g{{g}}_fastest_lap"><br>
+            Driver of the Day (+1): <input type="checkbox" name="g{{g}}_driver_day"><br>
+            Fastest pit stop (+2): <input type="checkbox" name="g{{g}}_fastest_pit"><br>
+            Ultime due file ma a punti (+2): <input type="checkbox" name="g{{g}}_back_to_points"><br>
+            Posizioni guadagnate (+0.5 ciascuna): <input type="number" name="g{{g}}_pos_gain" min="0" value="0"><br>
+            Vittoria GP (+3): <input type="checkbox" name="g{{g}}_win"><br>
+            Podio GP (+2): <input type="checkbox" name="g{{g}}_podium"><br><br>
 
-            DNF (non finisce la gara)? 
-            <input type="checkbox" name="g{{g}}_dnf" value="1"><br>
+            <!-- Malus -->
+            Squalifica (-5): <input type="checkbox" name="g{{g}}_dsq"><br>
+            DNF (-3): <input type="checkbox" name="g{{g}}_dnf"><br>
+            Penalità ≥6s (-4): <input type="checkbox" name="g{{g}}_pen_6"><br>
+            Penalità ≤5s (-3): <input type="checkbox" name="g{{g}}_pen_5"><br>
+            Ultimo in gara (-2): <input type="checkbox" name="g{{g}}_last"><br>
+            Non supera Q1 (-1): <input type="checkbox" name="g{{g}}_q1"><br>
+            Posizioni perse (-0.5 ciascuna): <input type="number" name="g{{g}}_pos_lost" min="0" value="0"><br>
         </fieldset>
         <br>
         {% endfor %}
 
-        <button type="submit">Calcola</button>
+        <input type="submit" value="Calcola punteggi">
     </form>
 </body>
 </html>
