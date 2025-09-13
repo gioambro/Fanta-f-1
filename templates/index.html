@@ -1,24 +1,59 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>Fanta F1</title>
-  </head>
-  <body>
-    <h1>Calcolo punteggi Fanta Formula 1</h1>
-    <form action="/calcola" method="post">
-      <label>Posizione finale: </label>
-      <input type="number" name="posizione" min="1" max="20"><br><br>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Fanta F1</title>
+</head>
+<body>
+  <h1>Calcolo punteggi Fanta Formula 1</h1>
+  <form action="/calcola" method="post">
 
-      <label>Sprint? </label>
-      <input type="checkbox" name="sprint"><br>
+    <label>Posizione finale: </label>
+    <input type="number" name="posizione" min="1" max="20"><br><br>
 
-      <label>Pole Position? </label>
-      <input type="checkbox" name="pole"><br>
+    <label>Gara Sprint? </label>
+    <input type="checkbox" name="sprint"><br>
 
-      <label>DNF (non finisce la gara)? </label>
-      <input type="checkbox" name="dnf"><br><br>
+    <label>Pole Position? </label>
+    <input type="checkbox" name="pole"><br>
 
-      <button type="submit">Calcola</button>
-    </form>
-  </body>
+    <label>Giro veloce? </label>
+    <input type="checkbox" name="fastest_lap"><br>
+
+    <label>Driver of the day? </label>
+    <input type="checkbox" name="driver_of_the_day"><br>
+
+    <label>Fastest pit stop? </label>
+    <input type="checkbox" name="fastest_pitstop"><br>
+
+    <label>Posizioni guadagnate: </label>
+    <input type="number" name="posizioni_guadagnate" value="0"><br>
+
+    <label>Posizioni perse: </label>
+    <input type="number" name="posizioni_perse" value="0"><br>
+
+    <label>DNF (non finisce la gara)? </label>
+    <input type="checkbox" name="dnf"><br>
+
+    <label>Squalifica? </label>
+    <input type="checkbox" name="squalifica"><br>
+
+    <label>Penalità ≥ 6 secondi? </label>
+    <input type="checkbox" name="penalita_grave"><br>
+
+    <label>Penalità ≤ 5 secondi? </label>
+    <input type="checkbox" name="penalita_leggera"><br>
+
+    <label>Ultimo in gara? </label>
+    <input type="checkbox" name="ultimo"><br>
+
+    <label>Vittoria GP? </label>
+    <input type="checkbox" name="vittoria"><br>
+
+    <label>Podio (2°/3° GP)? </label>
+    <input type="checkbox" name="podio"><br><br>
+
+    <button type="submit">Calcola</button>
+  </form>
+</body>
 </html>
