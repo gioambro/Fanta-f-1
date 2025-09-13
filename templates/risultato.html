@@ -1,25 +1,26 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8">
-  <title>Risultati giornata</title>
+    <meta charset="UTF-8">
+    <title>Risultati giornata</title>
 </head>
 <body>
-  <h1>Risultati della giornata</h1>
-  <table border="1">
-    <tr>
-      <th>Giocatore</th>
-      <th>Punti</th>
-    </tr>
-    {% for r in risultati %}
-    <tr>
-      <td>Giocatore {{ r.giocatore }}</td>
-      <td>{{ r.punti }}</td>
-    </tr>
-    {% endfor %}
-  </table>
+    <h1>Risultati giornata Fanta Formula 1</h1>
 
-  <br>
-  <a href="/">Torna indietro</a>
+    <table border="1" cellpadding="5">
+        <tr>
+            <th>Giocatore</th>
+            <th>Punteggio</th>
+        </tr>
+        {% for g, p in punteggi.items() %}
+        <tr>
+            <td>{{ g }}</td>
+            <td>{{ p }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <br>
+    <a href="/">⬅️ Torna alla home</a>
 </body>
 </html>
