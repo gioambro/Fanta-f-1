@@ -1,11 +1,25 @@
 <!DOCTYPE html>
-<html>
+<html lang="it">
 <head>
-    <title>Risultato</title>
+  <meta charset="UTF-8">
+  <title>Risultati giornata</title>
 </head>
 <body>
-    <h1>Risultato Calcolato</h1>
-    <p>Punteggio totale: <strong>{{ punti }}</strong></p>
-    <a href="/">Torna indietro</a>
+  <h1>Risultati della giornata</h1>
+  <table border="1">
+    <tr>
+      <th>Giocatore</th>
+      <th>Punti</th>
+    </tr>
+    {% for r in risultati %}
+    <tr>
+      <td>Giocatore {{ r.giocatore }}</td>
+      <td>{{ r.punti }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+
+  <br>
+  <a href="/">Torna indietro</a>
 </body>
 </html>
