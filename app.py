@@ -1,12 +1,28 @@
+import json
+import os
 from flask import Flask, render_template, request
 from punteggi import calcola_punteggio
 
 app = Flask(__name__)
+STORICO_FILE = "storico.json"
+
+def carica_storico():
+    if os.path.exists(STORICO_FILE):
+        with open(STORICO_FILE, "r") as f:
+            return json.load(f)
+    return []
+
+def salva_storico(storico):
+    with open(STORICO_FILE, "w") as f:
+        json.dump(storico, f, indent=4)
 
 @app.route("/", methods=["GET", "POST"])
 def home():
     if request.method == "POST":
         risultati = []
+        giornata = len(carica_storico()) + 1
+        punteggi_giornata = {"giornata": giornata}
+
         for i in range(1, 7):  # 6 giocatori
             dati = {
                 "pos": request.form.get(f"g{i}_pos"),
@@ -28,16 +44,13 @@ def home():
             }
             punteggio = calcola_punteggio(dati)
             risultati.append((f"Giocatore {i}", punteggio))
+            punteggi_giornata[f"Giocatore {i}"] = punteggio
 
-        return render_template("risultato.html", risultati=risultati)
+        # Salva nello storico
+        storico = carica_storico()
+        storico.append(punteggi_giornata)
+        salva_storico(storico)
+
+        return render_template("risultato.html", risultati=risultati, giornata=giornata)
 
     return render_template("index.html")
-
-
-@app.route("/risultato")
-def risultato():
-    return render_template("risultato.html", risultati=[])
-
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
