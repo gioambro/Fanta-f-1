@@ -24,6 +24,8 @@ def home():
 
         for i in range(1, 7):  # 6 giocatori
             totale_giocatore = 0
+            ha_inserito = False
+
             for p in range(1, 3):  # 2 piloti
                 dati = {
                     "pos": request.form.get(f"g{i}_p{p}_pos"),
@@ -43,7 +45,13 @@ def home():
                     "q1": request.form.get(f"g{i}_p{p}_q1"),
                     "pos_lost": request.form.get(f"g{i}_p{p}_pos_lost", 0),
                 }
-                totale_giocatore += calcola_punteggio(dati)
+
+                if any(dati.values()):
+                    ha_inserito = True
+                    totale_giocatore += calcola_punteggio(dati)
+
+            if not ha_inserito:
+                totale_giocatore = 0
 
             risultati.append((f"Giocatore {i}", totale_giocatore))
             punteggi_giornata[f"Giocatore {i}"] = totale_giocatore
@@ -53,13 +61,24 @@ def home():
         storico.append(punteggi_giornata)
         salva_storico(storico)
 
-        return render_template("risultato.html", risultati=risultati, giornata=giornata)
+        # Calcola classifica generale
+        totale_generale = {f"Giocatore {i}": 0 for i in range(1,7)}
+        for giornata in storico:
+            for g in range(1,7):
+                totale_generale[f"Giocatore {g}"] += giornata.get(f"Giocatore {g}", 0)
+
+        classifica_generale = sorted(totale_generale.items(), key=lambda x: x[1], reverse=True)
+
+        return render_template("risultato.html", 
+                               risultati=risultati, 
+                               giornata=giornata,
+                               classifica_generale=classifica_generale)
 
     return render_template("index.html")
 
 @app.route("/risultato")
 def risultato():
-    return render_template("risultato.html", risultati=[])
+    return render_template("risultato.html", risultati=[], classifica_generale=[])
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
