@@ -2,75 +2,30 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <title>Risultati giornata</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-        h1, h2 {
-            color: #222;
-        }
-        table {
-            border-collapse: collapse;
-            width: 70%;
-            margin-bottom: 30px;
-        }
-        th, td {
-            border: 1px solid #888;
-            padding: 8px 12px;
-            text-align: center;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-        .btn {
-            display: inline-block;
-            padding: 8px 15px;
-            background-color: #007bff;
-            color: white;
-            text-decoration: none;
-            border-radius: 4px;
-        }
-        .btn:hover {
-            background-color: #0056b3;
-        }
-    </style>
+    <title>Risultati</title>
 </head>
 <body>
-    <h1>Risultati della giornata {{ giornata }}</h1>
+    <h1>Classifica</h1>
 
-    <h2>Punteggi ottenuti</h2>
-    <table>
-        <tr>
-            <th>Giocatore</th>
-            <th>Punti</th>
-        </tr>
-        {% for g, punti in classifica_giornata.items() %}
-        <tr>
-            <td>{{ g }}</td>
-            <td>{{ punti }}</td>
-        </tr>
+    {% if classifica_giornata %}
+        <h2>Giornata {{ giornata }}</h2>
+        <ul>
+            {% for giocatore, punti in classifica_giornata.items() %}
+                <li>{{ giocatore }}: {{ punti }} punti</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Nessun risultato inserito per l'ultima giornata.</p>
+    {% endif %}
+
+    <h2>Classifica Generale</h2>
+    <ul>
+        {% for giocatore, punti in classifica_generale.items() %}
+            <li>{{ giocatore }}: {{ punti }} punti</li>
         {% endfor %}
-    </table>
+    </ul>
 
-    <h2>Classifica generale</h2>
-    <table>
-        <tr>
-            <th>Posizione</th>
-            <th>Giocatore</th>
-            <th>Punti totali</th>
-        </tr>
-        {% for g, punti in classifica_generale.items() %}
-        <tr>
-            <td>{{ loop.index }}</td>
-            <td>{{ g }}</td>
-            <td>{{ punti }}</td>
-        </tr>
-        {% endfor %}
-    </table>
-
-    <a href="/" class="btn">Torna alla home</a>
-    <a href="/inserisci" class="btn">Inserisci nuova giornata</a>
+    <br>
+    <a href="{{ url_for('index') }}">Torna alla home</a>
 </body>
 </html>
