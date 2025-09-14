@@ -3,16 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <title>Inserisci Risultati</title>
+    <script>
+        function aggiornaBonus(selectEl, vittoriaId, podioId) {
+            let pos = parseInt(selectEl.value);
+            let vittoria = document.getElementById(vittoriaId);
+            let podio = document.getElementById(podioId);
+
+            vittoria.checked = (pos === 1);
+            podio.checked = (pos === 2 || pos === 3);
+        }
+
+        function toggleSprint(selectEl, sprintDivId) {
+            let div = document.getElementById(sprintDivId);
+            div.style.display = (selectEl.value === "si") ? "block" : "none";
+        }
+    </script>
 </head>
 <body>
     <h1>Inserisci risultati della giornata</h1>
 
     <form method="POST">
         {% for giocatore in giocatori %}
-            <label>{{ giocatore }}</label>
-            <input type="number" name="punti_{{ giocatore }}" placeholder="Punti ottenuti">
-            <br><br>
+            <fieldset>
+                <legend>{{ giocatore }}</legend>
+
+                <!-- Posizione GP -->
+                <label>Posizione GP:</label>
+                <select name="posizione_{{ giocatore }}" onchange="aggiornaBonus(this, 'vittoria_{{ giocatore }}', 'podio_{{ giocatore }}')">
+                    <option value="">--</option>
+                    {% for i in range(1, 21) %}
+                        <option value="{{ i }}">{{ i }}</option>
+                    {% endfor %}
+                </select><br><br>
+
+                <!-- Bonus -->
+                <label><input type="checkbox" id="vittoria_{{ giocatore }}" name="vittoria_{{ giocatore }}"> Vittoria</label><br>
+                <label><input type="checkbox" id="podio_{{ giocatore }}" name="podio_{{ giocatore }}"> Podio</label><br>
+
+                <!-- Malus -->
+                <label><input type="checkbox" name="dnf_{{ giocatore }}"> DNF</label><br><br>
+
+                <!-- Sprint -->
+                <label>Gara Sprint:</label>
+                <select name="sprint_si_no_{{ giocatore }}" onchange="toggleSprint(this, 'sprintDiv_{{ giocatore }}')">
+                    <option value="no">No</option>
+                    <option value="si">Sì</option>
+                </select>
+
+                <div id="sprintDiv_{{ giocatore }}" style="display:none; margin-top:10px;">
+                    <label>Posizione Sprint:</label>
+                    <select name="sprint_posizione_{{ giocatore }}">
+                        <option value="">--</option>
+                        {% for i in range(1, 9) %}
+                            <option value="{{ i }}">{{ i }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </fieldset>
+            <br>
         {% endfor %}
+
         <button type="submit">Salva risultati</button>
     </form>
 
