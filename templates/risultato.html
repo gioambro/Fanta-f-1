@@ -61,9 +61,9 @@
             <th>Giocatore</th>
             <th>Punti totali</th>
         </tr>
-        {% for idx, (g, punti) in enumerate(classifica_generale.items(), start=1) %}
+        {% for g, punti in classifica_generale.items() %}
         <tr>
-            <td>{{ idx }}</td>
+            <td>{{ loop.index }}</td>
             <td>{{ g }}</td>
             <td>{{ punti }}</td>
         </tr>
