@@ -4,114 +4,85 @@
   <meta charset="UTF-8">
   <title>Inserisci Risultati</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    body { background-color: #121212; color: #f0f0f0; font-family: 'Roboto Condensed', sans-serif; }
-    h1, h2 { color: #e10600; font-weight: 700; }
-    .card { background-color: #1c1c1c; border: 1px solid #333; color: #f0f0f0; }
-    label { font-weight: 600; }
-    .btn-primary { background-color: #e10600; border: none; }
-    .btn-primary:hover { background-color: #b00500; }
+    body {
+      background-color: #121212;
+      color: #f1f1f1;
+      font-family: 'Roboto', sans-serif;
+    }
+    h1, h2 {
+      color: #e10600;
+    }
+    .accordion-button {
+      background-color: #222;
+      color: #f1f1f1;
+    }
+    .accordion-button:not(.collapsed) {
+      background-color: #e10600;
+      color: white;
+    }
+    .form-label {
+      font-weight: bold;
+    }
+    .btn-submit {
+      background-color: #e10600;
+      color: white;
+      font-weight: bold;
+    }
+    .btn-submit:hover {
+      background-color: #b00500;
+    }
   </style>
 </head>
 <body class="container py-4">
   <h1 class="mb-4">Inserisci risultati piloti</h1>
-
-  <form action="/salva" method="post" class="card p-4">
-    <div class="mb-3">
-      <label>Giocatore:</label>
-      <input type="text" name="giocatore" class="form-control" required>
+  <form action="/salva" method="post">
+    <div class="accordion" id="accordionGiocatori">
+      {% for giocatore in giocatori %}
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="heading{{loop.index}}">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{loop.index}}" aria-expanded="false">
+            {{ giocatore }}
+          </button>
+        </h2>
+        <div id="collapse{{loop.index}}" class="accordion-collapse collapse" data-bs-parent="#accordionGiocatori">
+          <div class="accordion-body">
+            {% for i in range(1,3) %}
+              <h5>Pilota {{i}}</h5>
+              <div class="mb-3">
+                <label class="form-label">Nome Pilota</label>
+                <input type="text" class="form-control" name="{{giocatore}}_pilota{{i}}">
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Griglia</label>
+                <input type="number" class="form-control" name="{{giocatore}}_griglia{{i}}" min="1" max="20">
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Posizione Finale</label>
+                <input type="number" class="form-control" name="{{giocatore}}_posizione{{i}}" min="1" max="20">
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Sprint?</label>
+                <select class="form-select" name="{{giocatore}}_sprint{{i}}">
+                  <option value="no">No</option>
+                  <option value="si">Sì</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Posizione Sprint</label>
+                <input type="number" class="form-control" name="{{giocatore}}_sprint_pos{{i}}" min="1" max="8">
+              </div>
+              <hr>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+      {% endfor %}
     </div>
-
-    <div class="mb-3">
-      <label>Pilota:</label>
-      <input type="text" name="pilota" class="form-control" required>
+    <div class="text-center mt-4">
+      <button type="submit" class="btn btn-submit btn-lg">Salva Tutti i Risultati</button>
     </div>
-
-    <div class="mb-3">
-      <label>Griglia di partenza:</label>
-      <input type="number" name="griglia" min="1" max="20" class="form-control">
-    </div>
-
-    <div class="mb-3">
-      <label>Posizione finale:</label>
-      <input type="number" name="posizione" min="1" max="20" class="form-control">
-    </div>
-
-    <!-- Sprint -->
-    <div class="mb-3">
-      <label>Gara Sprint?</label>
-      <select name="sprint" id="sprint" class="form-select" onchange="toggleSprint()">
-        <option value="no">No</option>
-        <option value="si">Sì</option>
-      </select>
-    </div>
-
-    <div id="sprint_pos_div" class="mb-3" style="display:none;">
-      <label>Posizione Sprint:</label>
-      <select name="sprint_pos" class="form-select">
-        <option value="">-- Seleziona --</option>
-        <option value="1">1 (8 pt)</option>
-        <option value="2">2 (7 pt)</option>
-        <option value="3">3 (6 pt)</option>
-        <option value="4">4 (5 pt)</option>
-        <option value="5">5 (4 pt)</option>
-        <option value="6">6 (3 pt)</option>
-        <option value="7">7 (2 pt)</option>
-        <option value="8">8 (1 pt)</option>
-      </select>
-    </div>
-
-    <hr>
-    <h2>Bonus</h2>
-    <div class="mb-2"><label>Pole in qualifica GP (+2):</label> <select name="pole" class="form-select"><option value="no">No</option><option value="si">Sì</option></select></div>
-    <div class="form-check"><input type="checkbox" name="fastest_lap" class="form-check-input fastest_lap"><label class="form-check-label">Giro veloce in gara (+1)</label></div>
-    <div class="form-check"><input type="checkbox" name="driver_day" class="form-check-input driver_day"><label class="form-check-label">Driver of the Day (+1)</label></div>
-    <div class="form-check"><input type="checkbox" name="fastest_pit" class="form-check-input fastest_pit"><label class="form-check-label">Fastest pit-stop (+2)</label></div>
-    <div class="mb-2"><label>Parte dalle ultime due file ma va a punti (+2):</label> <select name="rimonta" class="form-select"><option value="no">No</option><option value="si">Sì</option></select></div>
-    <div class="mb-2"><label>Posizioni guadagnate (+0,5 per posizione):</label> <select name="pos_guadagnate" class="form-select"><option value="no">No</option><option value="si">Sì</option></select></div>
-    <div class="mb-2"><label>Vittoria GP (+3):</label> <select name="vittoria" class="form-select"><option value="no">No</option><option value="si">Sì</option></select></div>
-    <div class="mb-2"><label>Podio GP (2°/3° posto) (+2):</label> <select name="podio" class="form-select"><option value="no">No</option><option value="si">Sì</option></select></div>
-
-    <hr>
-    <h2>Malus</h2>
-    <div class="mb-2"><label>Squalifica (-5):</label> <select name="squalifica" class="form-select"><option value="no">No</option><option value="si">Sì</option></select></div>
-    <div class="mb-2"><label>DNF (-3):</label> <select name="dnf" class="form-select"><option value="no">No</option><option value="si">Sì</option></select></div>
-    <div class="mb-2"><label>Penalità ≥ 6 secondi (-4):</label> <select name="pen6" class="form-select"><option value="no">No</option><option value="si">Sì</option></select></div>
-    <div class="mb-2"><label>Penalità ≤ 5 secondi (-3):</label> <select name="pen5" class="form-select"><option value="no">No</option><option value="si">Sì</option></select></div>
-    <div class="form-check"><input type="checkbox" name="last_place" class="form-check-input last_place"><label class="form-check-label">Ultimo in gara (-2)</label></div>
-    <div class="mb-2"><label>Non supera il Q1 (-1):</label> <select name="q1" class="form-select"><option value="no">No</option><option value="si">Sì</option></select></div>
-    <div class="mb-2"><label>Posizioni perse (-0,5 per posizione):</label> <select name="pos_perse" class="form-select"><option value="no">No</option><option value="si">Sì</option></select></div>
-
-    <br>
-    <button type="submit" class="btn btn-primary">💾 Salva risultati</button>
   </form>
-
-  <script>
-  function toggleSprint() {
-    let sprintSelect = document.getElementById("sprint").value;
-    let sprintDiv = document.getElementById("sprint_pos_div");
-    sprintDiv.style.display = (sprintSelect === "si") ? "block" : "none";
-  }
-
-  function enforceUniqueBonus(className, message) {
-    let checkboxes = document.querySelectorAll("." + className);
-    checkboxes.forEach(cb => {
-      cb.addEventListener("change", function() {
-        if (this.checked) {
-          checkboxes.forEach(other => {
-            if (other !== this) other.checked = false;
-          });
-          alert(message);
-        }
-      });
-    });
-  }
-
-  enforceUniqueBonus("driver_day", "⚠️ Driver of the Day può essere assegnato a un solo pilota.");
-  enforceUniqueBonus("fastest_lap", "⚠️ Il giro veloce può essere assegnato a un solo pilota.");
-  enforceUniqueBonus("fastest_pit", "⚠️ Il fastest pit-stop può essere assegnato a un solo pilota.");
-  enforceUniqueBonus("last_place", "⚠️ L'ultimo in gara può essere assegnato a un solo pilota.");
-  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
