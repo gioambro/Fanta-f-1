@@ -1,14 +1,22 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <meta charset="UTF-8">
-    <title>Fanta F1</title>
+  <meta charset="UTF-8">
+  <title>Classifica Fanta-F1</title>
 </head>
 <body>
-    <h1>Benvenuto al Fanta F1</h1>
-    <ul>
-        <li><a href="{{ url_for('inserisci') }}">Inserisci risultati giornata</a></li>
-        <li><a href="{{ url_for('risultati_view') }}">Vedi risultati</a></li>
-    </ul>
+  <h1>Classifica Fanta-F1</h1>
+  <table border="1">
+    <tr><th>Giocatore</th><th>Punti</th></tr>
+    {% for giocatore, punti in classifica.items() %}
+    <tr>
+      <td>{{ giocatore }}</td>
+      <td>{{ punti }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+  <br>
+  <a href="{{ url_for('inserisci') }}">Inserisci risultato</a> |
+  <a href="{{ url_for('risultati_page') }}">Vedi risultati inseriti</a>
 </body>
 </html>
