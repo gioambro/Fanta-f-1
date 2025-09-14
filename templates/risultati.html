@@ -2,22 +2,15 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <title>Classifica Generale</title>
+    <title>Risultati</title>
 </head>
 <body>
     <h1>Classifica Generale</h1>
-    <table border="1">
-        <tr>
-            <th>Giocatore</th>
-            <th>Punti</th>
-        </tr>
-        {% for giocatore, punti in punteggi.items() %}
-        <tr>
-            <td>{{ giocatore }}</td>
-            <td>{{ punti }}</td>
-        </tr>
+    <ol>
+        {% for team, punti in classifica %}
+            <li><b>{{ team }}</b>: {{ punti }} punti</li>
         {% endfor %}
-    </table>
+    </ol>
     <p><a href="{{ url_for('index') }}">Torna alla home</a></p>
 </body>
 </html>
