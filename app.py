@@ -8,39 +8,6 @@ app.secret_key = "supersecretkey"  # Cambialo in produzione!
 
 DB_FILE = "users.db"
 
-# ---------------------------------
-# Creazione automatica del DB utenti se non esiste
-# ---------------------------------
-def init_db():
-    if not os.path.exists(DB_FILE):
-        conn = sqlite3.connect(DB_FILE)
-        cur = conn.cursor()
-        cur.execute("""
-            CREATE TABLE users (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                username TEXT UNIQUE NOT NULL,
-                password TEXT NOT NULL,
-                role TEXT NOT NULL
-            )
-        """)
-        # Utenti iniziali
-        utenti = [
-            ("admin", generate_password_hash("1234"), "admin"),
-            ("Alfarumeno", generate_password_hash("1234"), "player"),
-            ("Stalloni", generate_password_hash("1234"), "player"),
-            ("WC in Geriatria", generate_password_hash("1234"), "player"),
-            ("Strolling Around", generate_password_hash("1234"), "player"),
-            ("Spartaboyz", generate_password_hash("1234"), "player"),
-            ("Vodkaredbull", generate_password_hash("1234"), "player"),
-        ]
-        cur.executemany("INSERT INTO users (username, password, role) VALUES (?, ?, ?)", utenti)
-        conn.commit()
-        conn.close()
-        print("✅ Database creato con utenti iniziali")
-
-# Richiama la funzione all'avvio
-init_db()
-
 # -----------------------------
 # Utility database
 # -----------------------------
@@ -159,13 +126,29 @@ def admin():
     return render_template("admin.html", users=users)
 
 # -----------------------------
-# Inserimento risultati (bozza)
+# Inserimento risultati (con limite 2 piloti)
 # -----------------------------
-@app.route("/inserisci")
+# archivio formazioni in RAM per ora
+formazioni = {}
+
+@app.route("/inserisci", methods=["GET", "POST"])
 def inserisci():
     if "username" not in session:
         return redirect(url_for("login"))
-    return render_template("inserisci.html", user=session["username"])
+
+    user = session["username"]
+
+    if request.method == "POST":
+        pilota1 = request.form["pilota1"]
+        pilota2 = request.form["pilota2"]
+
+        # Controllo limite 2 piloti
+        formazioni[user] = [pilota1, pilota2]
+
+        flash("Formazione salvata con successo!", "success")
+        return redirect(url_for("index"))
+
+    return render_template("inserisci.html", user=user, formazione=formazioni.get(user, []))
 
 # -----------------------------
 # Avvio
