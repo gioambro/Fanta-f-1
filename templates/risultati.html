@@ -5,15 +5,16 @@
     <title>Risultati</title>
 </head>
 <body>
-    <h1>Risultati giornata</h1>
-    {% for squadra, punti in risultati.items() %}
-        <h2>{{ squadra }}</h2>
-        <ul>
-            <li>Pilota 1: {{ punti[0] }} pt</li>
-            <li>Pilota 2: {{ punti[1] }} pt</li>
-            <li><strong>Totale squadra: {{ totali[squadra] }} pt</strong></li>
-        </ul>
-    {% endfor %}
-    <a href="{{ url_for('index') }}">Torna alla home</a>
+    <h1>Risultato Giornata</h1>
+    <p>{{ giocatore }} ha totalizzato <strong>{{ punti }}</strong> punti.</p>
+
+    <h2>Classifica Generale</h2>
+    <ol>
+        {% for g, p in classifica %}
+            <li>{{ g }} - {{ p }} punti</li>
+        {% endfor %}
+    </ol>
+
+    <a href="{{ url_for('inserisci') }}">Inserisci un altro risultato</a>
 </body>
 </html>
