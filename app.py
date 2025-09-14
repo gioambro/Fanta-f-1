@@ -30,23 +30,33 @@ def get_user(username):
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        username = request.form["username"]
-        password = request.form["password"]
+        username = request.form.get("username")
+        password = request.form.get("password")
 
         user = get_user(username)
-        if user and check_password_hash(user["password"], password):
-            session["username"] = user["username"]
-            session["role"] = user["role"]
-            flash("Login effettuato con successo!", "success")
-            return redirect(url_for("index"))
-        else:
-            flash("Credenziali errate!", "danger")
+
+        if not user:
+            flash("❌ Utente non trovato!", "danger")
+            return redirect(url_for("login"))
+
+        try:
+            if check_password_hash(user["password"], password):
+                session["username"] = user["username"]
+                session["role"] = user["role"]
+                flash("✅ Login effettuato con successo!", "success")
+                return redirect(url_for("index"))
+            else:
+                flash("❌ Password errata!", "danger")
+        except Exception as e:
+            flash(f"⚠️ Errore durante il login: {str(e)}", "danger")
+            return redirect(url_for("login"))
+
     return render_template("login.html")
 
 @app.route("/logout")
 def logout():
     session.clear()
-    flash("Logout effettuato", "info")
+    flash("🔒 Logout effettuato", "info")
     return redirect(url_for("login"))
 
 # -----------------------------
@@ -69,10 +79,10 @@ def cambia_password():
                         (generate_password_hash(new), session["username"]))
             conn.commit()
             conn.close()
-            flash("Password aggiornata con successo!", "success")
+            flash("🔑 Password aggiornata con successo!", "success")
             return redirect(url_for("index"))
         else:
-            flash("Password attuale errata", "danger")
+            flash("❌ Password attuale errata", "danger")
 
     return render_template("change_password.html")
 
@@ -86,7 +96,7 @@ def index():
 @app.route("/admin", methods=["GET", "POST"])
 def admin():
     if session.get("role") != "admin":
-        flash("Accesso negato!", "danger")
+        flash("❌ Accesso negato!", "danger")
         return redirect(url_for("index"))
 
     conn = get_db()
@@ -102,14 +112,14 @@ def admin():
             cur.execute("INSERT INTO users (username, password, role) VALUES (?, ?, ?)",
                         (username, generate_password_hash(password), role))
             conn.commit()
-            flash("Utente aggiunto!", "success")
+            flash("✅ Utente aggiunto!", "success")
 
         elif action == "delete":
             username = request.form["username"]
             if username != "admin":  # Non eliminare admin
                 cur.execute("DELETE FROM users WHERE username = ?", (username,))
                 conn.commit()
-                flash("Utente eliminato!", "warning")
+                flash("⚠️ Utente eliminato!", "warning")
 
         elif action == "reset":
             username = request.form["username"]
@@ -117,7 +127,7 @@ def admin():
             cur.execute("UPDATE users SET password = ? WHERE username = ?",
                         (generate_password_hash(newpass), username))
             conn.commit()
-            flash("Password resettata!", "info")
+            flash("🔑 Password resettata!", "info")
 
     cur.execute("SELECT username, role FROM users")
     users = cur.fetchall()
