@@ -8,12 +8,22 @@ conn = sqlite3.connect(DB_FILE)
 cur = conn.cursor()
 
 cur.execute("DROP TABLE IF EXISTS users")
+cur.execute("DROP TABLE IF EXISTS formazioni")
+
 cur.execute("""
     CREATE TABLE users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         username TEXT UNIQUE NOT NULL,
         password TEXT NOT NULL,
         role TEXT NOT NULL
+    )
+""")
+
+cur.execute("""
+    CREATE TABLE formazioni (
+        username TEXT PRIMARY KEY,
+        pilota1 TEXT,
+        pilota2 TEXT
     )
 """)
 
@@ -32,4 +42,4 @@ cur.executemany("INSERT INTO users (username, password, role) VALUES (?, ?, ?)",
 conn.commit()
 conn.close()
 
-print("✅ Database users.db creato con utenti iniziali!")
+print("✅ Database users.db creato con utenti iniziali e tabella formazioni!")
