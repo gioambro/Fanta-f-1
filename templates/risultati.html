@@ -10,23 +10,25 @@
     <tr>
       <th>Giocatore</th>
       <th>Pilota</th>
-      <th>Punti</th>
-      <th>Posizione Finale</th>
+      <th>Posizione finale</th>
       <th>Griglia</th>
       <th>Sprint</th>
+      <th>Punti ottenuti</th>
     </tr>
     {% for r in risultati %}
-    <tr>
-      <td>{{ r.giocatore }}</td>
-      <td>{{ r.pilota }}</td>
-      <td>{{ r.punti }}</td>
-      <td>{{ r.posizione }}</td>
-      <td>{{ r.griglia }}</td>
-      <td>{{ r.sprint }}</td>
-    </tr>
+      <tr>
+        <td>{{ r.giocatore }}</td>
+        <td>{{ r.pilota }}</td>
+        <td>{{ r.posizione }}</td>
+        <td>{{ r.griglia }}</td>
+        <td>{{ r.sprint }}</td>
+        <td>{{ r.punti }}</td>
+      </tr>
     {% endfor %}
   </table>
+
   <br>
-  <a href="{{ url_for('index') }}">Torna alla classifica</a>
+  <a href="/">🏆 Torna alla classifica</a>
+  <a href="/inserisci">➕ Inserisci altri risultati</a>
 </body>
 </html>
