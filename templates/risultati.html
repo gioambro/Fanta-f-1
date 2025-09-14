@@ -2,65 +2,34 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <title>Risultati Dettagliati</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-    body {
-      background-color: #121212;
-      color: #f1f1f1;
-      font-family: 'Roboto', sans-serif;
-    }
-    h1 {
-      color: #e10600;
-      margin-bottom: 20px;
-    }
-    .table {
-      background-color: #1e1e1e;
-      color: #f1f1f1;
-    }
-    .table thead {
-      background-color: #e10600;
-      color: white;
-    }
-    .btn-nav {
-      background-color: #e10600;
-      color: white;
-      font-weight: bold;
-    }
-    .btn-nav:hover {
-      background-color: #b00500;
-    }
-  </style>
+  <title>Risultati</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body class="container py-4">
-  <h1>Risultati Inseriti</h1>
-  <table class="table table-striped table-bordered text-center">
-    <thead>
+<body>
+  <div class="container">
+    <h1>Risultati inseriti</h1>
+    <table>
       <tr>
         <th>Giocatore</th>
         <th>Pilota</th>
         <th>Punti</th>
-        <th>Posizione Finale</th>
         <th>Griglia</th>
+        <th>Posizione</th>
         <th>Sprint</th>
       </tr>
-    </thead>
-    <tbody>
       {% for r in risultati %}
       <tr>
         <td>{{ r.giocatore }}</td>
         <td>{{ r.pilota }}</td>
-        <td><strong>{{ r.punti }}</strong></td>
-        <td>{{ r.posizione }}</td>
+        <td>{{ r.punti }}</td>
         <td>{{ r.griglia }}</td>
+        <td>{{ r.posizione }}</td>
         <td>{{ r.sprint }}</td>
       </tr>
       {% endfor %}
-    </tbody>
-  </table>
-  <div class="mt-4 d-flex justify-content-center gap-3">
-    <a href="/" class="btn btn-nav">🏆 Classifica</a>
-    <a href="/inserisci" class="btn btn-nav">➕ Inserisci Altri Risultati</a>
+    </table>
+    <br>
+    <a href="{{ url_for('index') }}" class="btn">Torna alla classifica</a>
   </div>
 </body>
 </html>
