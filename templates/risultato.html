@@ -1,25 +1,32 @@
 <!DOCTYPE html>
-<html>
+<html lang="it">
 <head>
+    <meta charset="UTF-8">
     <title>Classifica Generale</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        table { margin: auto; border-collapse: collapse; width: 50%; }
+        th, td { border: 1px solid black; padding: 8px; text-align: center; }
+        th { background-color: #f2f2f2; }
+    </style>
 </head>
 <body>
     <h1>Classifica Generale</h1>
-
-    <table border="1" cellpadding="5">
+    <table>
         <tr>
+            <th>Posizione</th>
             <th>Giocatore</th>
             <th>Punti</th>
         </tr>
-        {% for giocatore, punti in classifica_generale.items() %}
+        {% for idx, (giocatore, punti) in enumerate(classifica_generale.items(), start=1) %}
         <tr>
+            <td>{{ idx }}</td>
             <td>{{ giocatore }}</td>
             <td>{{ punti }}</td>
         </tr>
         {% endfor %}
     </table>
-
     <br>
-    <a href="{{ url_for('home') }}">Torna alla home</a>
+    <a href="{{ url_for('home') }}">Torna alla Home</a>
 </body>
 </html>
