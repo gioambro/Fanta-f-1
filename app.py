@@ -1,6 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 import sqlite3
-import os
 from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
@@ -93,7 +92,12 @@ def cambia_password():
 # -----------------------------
 @app.route("/")
 def index():
-    return render_template("index.html", user=session.get("username"), role=session.get("role"))
+    conn = get_db()
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM formazioni")
+    formazioni = cur.fetchall()
+    conn.close()
+    return render_template("index.html", user=session.get("username"), role=session.get("role"), formazioni=formazioni)
 
 @app.route("/admin", methods=["GET", "POST"])
 def admin():
@@ -151,6 +155,9 @@ def inserisci():
         flash("Il tuo account non ha piloti assegnati!", "danger")
         return redirect(url_for("index"))
 
+    conn = get_db()
+    cur = conn.cursor()
+
     if request.method == "POST":
         pilota1 = request.form.get("pilota1")
         pilota2 = request.form.get("pilota2")
@@ -159,12 +166,23 @@ def inserisci():
             flash("❌ Devi scegliere due piloti diversi!", "danger")
             return redirect(url_for("inserisci"))
 
-        flash(f"✅ Hai selezionato {pilota1} e {pilota2}", "success")
-        # TODO: Salvare su DB le formazioni
+        # Salva o aggiorna la formazione
+        cur.execute("""
+            INSERT INTO formazioni (username, pilota1, pilota2)
+            VALUES (?, ?, ?)
+            ON CONFLICT(username) DO UPDATE SET pilota1=excluded.pilota1, pilota2=excluded.pilota2
+        """, (user, pilota1, pilota2))
+        conn.commit()
 
+        flash(f"✅ Formazione aggiornata: {pilota1} e {pilota2}", "success")
         return redirect(url_for("index"))
 
-    return render_template("inserisci.html", user=user, piloti=piloti_giocatori[user])
+    # Recupera eventuale formazione salvata
+    cur.execute("SELECT pilota1, pilota2 FROM formazioni WHERE username = ?", (user,))
+    formazione = cur.fetchone()
+    conn.close()
+
+    return render_template("inserisci.html", user=user, piloti=piloti_giocatori[user], formazione=formazione)
 
 # -----------------------------
 # Avvio
