@@ -2,71 +2,31 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <title>Inserisci Risultati</title>
-    <script>
-        function aggiornaBonus(selectEl, vittoriaId, podioId) {
-            let pos = parseInt(selectEl.value);
-            let vittoria = document.getElementById(vittoriaId);
-            let podio = document.getElementById(podioId);
-
-            vittoria.checked = (pos === 1);
-            podio.checked = (pos === 2 || pos === 3);
-        }
-
-        function toggleSprint(selectEl, sprintDivId) {
-            let div = document.getElementById(sprintDivId);
-            div.style.display = (selectEl.value === "si") ? "block" : "none";
-        }
-    </script>
+    <title>Inserisci risultati della giornata</title>
 </head>
 <body>
     <h1>Inserisci risultati della giornata</h1>
-
     <form method="POST">
         {% for giocatore in giocatori %}
-            <fieldset>
-                <legend>{{ giocatore }}</legend>
+            <h3>{{ giocatore }}</h3>
+            <label>Punti base: </label>
+            <input type="number" name="{{ giocatore }}_punti" step="0.5" required><br>
 
-                <!-- Posizione GP -->
-                <label>Posizione GP:</label>
-                <select name="posizione_{{ giocatore }}" onchange="aggiornaBonus(this, 'vittoria_{{ giocatore }}', 'podio_{{ giocatore }}')">
-                    <option value="">--</option>
-                    {% for i in range(1, 21) %}
-                        <option value="{{ i }}">{{ i }}</option>
-                    {% endfor %}
-                </select><br><br>
+            <label>Bonus posizioni guadagnate: </label>
+            <input type="number" name="{{ giocatore }}_pos_guadagnate" value="0"><br>
 
-                <!-- Bonus -->
-                <label><input type="checkbox" id="vittoria_{{ giocatore }}" name="vittoria_{{ giocatore }}"> Vittoria</label><br>
-                <label><input type="checkbox" id="podio_{{ giocatore }}" name="podio_{{ giocatore }}"> Podio</label><br>
+            <label>Malus posizioni perse: </label>
+            <input type="number" name="{{ giocatore }}_pos_perse" value="0"><br>
 
-                <!-- Malus -->
-                <label><input type="checkbox" name="dnf_{{ giocatore }}"> DNF</label><br><br>
+            <label>Altri bonus (es. giro veloce): </label>
+            <input type="number" name="{{ giocatore }}_bonus" value="0"><br>
 
-                <!-- Sprint -->
-                <label>Gara Sprint:</label>
-                <select name="sprint_si_no_{{ giocatore }}" onchange="toggleSprint(this, 'sprintDiv_{{ giocatore }}')">
-                    <option value="no">No</option>
-                    <option value="si">Sì</option>
-                </select>
-
-                <div id="sprintDiv_{{ giocatore }}" style="display:none; margin-top:10px;">
-                    <label>Posizione Sprint:</label>
-                    <select name="sprint_posizione_{{ giocatore }}">
-                        <option value="">--</option>
-                        {% for i in range(1, 9) %}
-                            <option value="{{ i }}">{{ i }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-            </fieldset>
-            <br>
+            <label>Altri malus (es. ritiri): </label>
+            <input type="number" name="{{ giocatore }}_malus" value="0"><br>
+            <hr>
         {% endfor %}
-
         <button type="submit">Salva risultati</button>
     </form>
-
-    <br>
     <a href="{{ url_for('index') }}">Torna alla home</a>
 </body>
 </html>
