@@ -1,113 +1,141 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, session, flash
+import sqlite3
+import os
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
+app.secret_key = "supersecretkey"  # Cambialo in produzione!
 
-# Punteggi base GP
-punti_gp = {
-    1: 25, 2: 18, 3: 15, 4: 12, 5: 10,
-    6: 8, 7: 6, 8: 4, 9: 2, 10: 1
-}
+DB_FILE = "users.db"
 
-# Punteggi Sprint
-punti_sprint = {1: 8, 2: 7, 3: 6, 4: 5, 5: 4, 6: 3, 7: 2, 8: 1}
+# -----------------------------
+# Utility database
+# -----------------------------
+def get_db():
+    conn = sqlite3.connect(DB_FILE)
+    conn.row_factory = sqlite3.Row
+    return conn
 
-# Classifica iniziale
-classifica = {
-    "Alfarumeno": 12,
-    "Stalloni": 10,
-    "WC in Geriatria": 10,
-    "Strolling Around": 5,
-    "Spartaboyz": 5,
-    "Vodkaredbull": 2
-}
+def get_user(username):
+    conn = get_db()
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM users WHERE username = ?", (username,))
+    user = cur.fetchone()
+    conn.close()
+    return user
 
-# Archivio risultati
-risultati = []
+# -----------------------------
+# Rotte di autenticazione
+# -----------------------------
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        username = request.form["username"]
+        password = request.form["password"]
 
+        user = get_user(username)
+        if user and check_password_hash(user["password"], password):
+            session["username"] = user["username"]
+            session["role"] = user["role"]
+            flash("Login effettuato con successo!", "success")
+            return redirect(url_for("index"))
+        else:
+            flash("Credenziali errate!", "danger")
+    return render_template("login.html")
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    flash("Logout effettuato", "info")
+    return redirect(url_for("login"))
+
+# -----------------------------
+# Cambio password
+# -----------------------------
+@app.route("/cambia_password", methods=["GET", "POST"])
+def cambia_password():
+    if "username" not in session:
+        return redirect(url_for("login"))
+
+    if request.method == "POST":
+        old = request.form["old_password"]
+        new = request.form["new_password"]
+
+        user = get_user(session["username"])
+        if user and check_password_hash(user["password"], old):
+            conn = get_db()
+            cur = conn.cursor()
+            cur.execute("UPDATE users SET password = ? WHERE username = ?",
+                        (generate_password_hash(new), session["username"]))
+            conn.commit()
+            conn.close()
+            flash("Password aggiornata con successo!", "success")
+            return redirect(url_for("index"))
+        else:
+            flash("Password attuale errata", "danger")
+
+    return render_template("change_password.html")
+
+# -----------------------------
+# Home e pannello admin
+# -----------------------------
 @app.route("/")
 def index():
-    return render_template("index.html", classifica=classifica)
+    return render_template("index.html", user=session.get("username"), role=session.get("role"))
 
+@app.route("/admin", methods=["GET", "POST"])
+def admin():
+    if session.get("role") != "admin":
+        flash("Accesso negato!", "danger")
+        return redirect(url_for("index"))
+
+    conn = get_db()
+    cur = conn.cursor()
+
+    if request.method == "POST":
+        action = request.form["action"]
+
+        if action == "add":
+            username = request.form["username"]
+            password = request.form["password"]
+            role = request.form["role"]
+            cur.execute("INSERT INTO users (username, password, role) VALUES (?, ?, ?)",
+                        (username, generate_password_hash(password), role))
+            conn.commit()
+            flash("Utente aggiunto!", "success")
+
+        elif action == "delete":
+            username = request.form["username"]
+            if username != "admin":  # Non eliminare admin
+                cur.execute("DELETE FROM users WHERE username = ?", (username,))
+                conn.commit()
+                flash("Utente eliminato!", "warning")
+
+        elif action == "reset":
+            username = request.form["username"]
+            newpass = request.form["new_password"]
+            cur.execute("UPDATE users SET password = ? WHERE username = ?",
+                        (generate_password_hash(newpass), username))
+            conn.commit()
+            flash("Password resettata!", "info")
+
+    cur.execute("SELECT username, role FROM users")
+    users = cur.fetchall()
+    conn.close()
+
+    return render_template("admin.html", users=users)
+
+# -----------------------------
+# Inserimento risultati (bozza)
+# -----------------------------
 @app.route("/inserisci")
 def inserisci():
-    return render_template("inserisci.html", giocatori=list(classifica.keys()))
+    if "username" not in session:
+        return redirect(url_for("login"))
+    return render_template("inserisci.html", user=session["username"])
 
-@app.route("/salva", methods=["POST"])
-def salva():
-    for giocatore in classifica.keys():
-        for i in range(1, 3):  # 2 piloti per giocatore
-            pilota = request.form.get(f"{giocatore}_pilota{i}")
-            if not pilota:
-                continue
-
-            griglia = int(request.form.get(f"{giocatore}_pilota{i}_griglia", 0))
-            posizione = int(request.form.get(f"{giocatore}_pilota{i}_posizione", 0))
-
-            sprint = request.form.get(f"{giocatore}_pilota{i}_sprint", "no")
-            sprint_pos = int(request.form.get(f"{giocatore}_pilota{i}_sprint_pos", 0)) if sprint == "si" else 0
-
-            punti = 0
-
-            # ---- Punti GP ----
-            if posizione in punti_gp:
-                punti += punti_gp[posizione]
-
-            # ---- Punti Sprint ----
-            if sprint == "si" and sprint_pos in punti_sprint:
-                punti += punti_sprint[sprint_pos]
-
-            # ---- Bonus ----
-            if request.form.get(f"{giocatore}_pilota{i}_pole") == "si":
-                punti += 2
-            if request.form.get(f"{giocatore}_pilota{i}_fastest_lap"):
-                punti += 1
-            if request.form.get(f"{giocatore}_pilota{i}_driver_day"):
-                punti += 1
-            if request.form.get(f"{giocatore}_pilota{i}_fastest_pit"):
-                punti += 2
-            if request.form.get(f"{giocatore}_pilota{i}_rimonta") == "si":
-                punti += 2
-            if request.form.get(f"{giocatore}_pilota{i}_pos_guadagnate") == "si" and posizione and griglia and posizione < griglia:
-                punti += 0.5 * (griglia - posizione)
-            if request.form.get(f"{giocatore}_pilota{i}_vittoria") == "si":
-                punti += 3
-            if request.form.get(f"{giocatore}_pilota{i}_podio") == "si":
-                punti += 2
-
-            # ---- Malus ----
-            if request.form.get(f"{giocatore}_pilota{i}_squalifica") == "si":
-                punti -= 5
-            if request.form.get(f"{giocatore}_pilota{i}_dnf") == "si":
-                punti -= 3
-            if request.form.get(f"{giocatore}_pilota{i}_pen6") == "si":
-                punti -= 4
-            if request.form.get(f"{giocatore}_pilota{i}_pen5") == "si":
-                punti -= 3
-            if request.form.get(f"{giocatore}_pilota{i}_last_place"):
-                punti -= 2
-            if request.form.get(f"{giocatore}_pilota{i}_q1") == "si":
-                punti -= 1
-            if request.form.get(f"{giocatore}_pilota{i}_pos_perse") == "si" and posizione and griglia and posizione > griglia and request.form.get(f"{giocatore}_pilota{i}_dnf") == "no":
-                punti -= 0.5 * (posizione - griglia)
-
-            # Aggiorna classifica
-            classifica[giocatore] += punti
-
-            # Salva risultato singolo
-            risultati.append({
-                "giocatore": giocatore,
-                "pilota": pilota,
-                "punti": punti,
-                "posizione": posizione,
-                "griglia": griglia,
-                "sprint": sprint_pos
-            })
-
-    return redirect(url_for("risultati_page"))
-
-@app.route("/risultati")
-def risultati_page():
-    return render_template("risultati.html", risultati=risultati)
-
+# -----------------------------
+# Avvio
+# -----------------------------
 if __name__ == "__main__":
     app.run(debug=True)
