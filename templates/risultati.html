@@ -1,34 +1,38 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8">
-  <title>Risultati Inseriti</title>
+  <meta charset="utf-8">
+  <title>Risultati inseriti</title>
 </head>
 <body>
-  <h1>Risultati Inseriti</h1>
-  <table border="1">
-    <tr>
-      <th>Giocatore</th>
-      <th>Pilota</th>
-      <th>Posizione finale</th>
-      <th>Griglia</th>
-      <th>Sprint</th>
-      <th>Punti ottenuti</th>
-    </tr>
-    {% for r in risultati %}
-      <tr>
-        <td>{{ r.giocatore }}</td>
-        <td>{{ r.pilota }}</td>
-        <td>{{ r.posizione }}</td>
-        <td>{{ r.griglia }}</td>
-        <td>{{ r.sprint }}</td>
-        <td>{{ r.punti }}</td>
-      </tr>
-    {% endfor %}
-  </table>
+  <h1>Risultati inseriti (per giornata)</h1>
 
-  <br>
-  <a href="/">🏆 Torna alla classifica</a>
-  <a href="/inserisci">➕ Inserisci altri risultati</a>
+  {% for day in risultati %}
+    <h2>Giornata {{ day.giornata }}</h2>
+    <table border="1" cellpadding="6">
+      <tr><th>Giocatore</th><th>Punti Totali</th><th>Pilota</th><th>Griglia</th><th>Posizione</th><th>Sprint</th><th>Punti pilota</th></tr>
+      {% for rec in day.dettagli %}
+        {% for pil in rec.piloti %}
+          <tr>
+            {% if loop.index0 == 0 %}
+              <td rowspan="2">{{ rec.giocatore }}</td>
+              <td rowspan="2">{{ rec.punti_totali }}</td>
+            {% endif %}
+            <td>{{ pil.nome }}</td>
+            <td>{{ pil.griglia }}</td>
+            <td>{{ pil.posizione }}</td>
+            <td>{{ pil.sprint if pil.sprint else '-' }}</td>
+            <td>{{ pil.punti }}</td>
+          </tr>
+        {% endfor %}
+      {% endfor %}
+    </table>
+  {% endfor %}
+
+  <p>
+    <a href="{{ url_for('index') }}">← Torna alla classifica</a>
+    |
+    <a href="{{ url_for('inserisci') }}">Inserisci altra giornata →</a>
+  </p>
 </body>
 </html>
