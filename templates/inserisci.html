@@ -1,92 +1,21 @@
 <!DOCTYPE html>
-<html lang="it">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>Inserisci risultati giornata</title>
-  <script>
-    function toggleSprint(giocatore) {
-      let select = document.getElementById(giocatore + "_sprint_flag");
-      let box = document.getElementById(giocatore + "_sprint_box");
-      if (select.value === "si") {
-        box.style.display = "block";
-      } else {
-        box.style.display = "none";
-      }
-    }
-  </script>
+    <title>Inserisci Risultati</title>
 </head>
 <body>
-  <h1>Inserisci risultati giornata</h1>
-  <form method="POST">
-    {% for g in range(1,7) %}
-    <fieldset>
-      <legend>Giocatore {{ g }}</legend>
+    <h1>Inserisci risultati della giornata</h1>
 
-      {% for p in range(1,3) %}
-      <h3>Pilota {{ p }}</h3>
-      <label>Griglia di partenza:</label>
-      <input type="number" name="g{{g}}_p{{p}}_griglia" min="1"><br>
+    <form method="post">
+        {% for giocatore in nomi %}
+            <label for="{{ giocatore }}">{{ giocatore }}</label>
+            <input type="number" name="{{ giocatore }}" placeholder="Punti ottenuti">
+            <br><br>
+        {% endfor %}
+        <button type="submit">Salva risultati</button>
+    </form>
 
-      <label>Posizione finale:</label>
-      <input type="number" name="g{{g}}_p{{p}}_pos" min="1"><br>
-
-      <label>Pole?</label>
-      <input type="checkbox" name="g{{g}}_p{{p}}_pole"><br>
-
-      <label>Giro veloce?</label>
-      <input type="checkbox" name="g{{g}}_p{{p}}_fastest_lap"><br>
-
-      <label>Driver of the day?</label>
-      <input type="checkbox" name="g{{g}}_p{{p}}_driver_day"><br>
-
-      <label>Fastest pit-stop?</label>
-      <input type="checkbox" name="g{{g}}_p{{p}}_fastest_pit"><br>
-
-      <label>DNF?</label>
-      <input type="checkbox" name="g{{g}}_p{{p}}_dnf"><br>
-
-      <label>Squalifica?</label>
-      <input type="checkbox" name="g{{g}}_p{{p}}_squalifica"><br>
-
-      <label>Penalità ≥ 6s?</label>
-      <input type="checkbox" name="g{{g}}_p{{p}}_pen_6"><br>
-
-      <label>Penalità ≤ 5s?</label>
-      <input type="checkbox" name="g{{g}}_p{{p}}_pen_5"><br>
-
-      <label>Ultimo in gara?</label>
-      <input type="checkbox" name="g{{g}}_p{{p}}_ultimo"><br>
-
-      <label>Non supera Q1?</label>
-      <input type="checkbox" name="g{{g}}_p{{p}}_no_q1"><br>
-
-      <!-- Sprint -->
-      <label>Sprint Race?</label>
-      <select name="g{{g}}_p{{p}}_sprint_flag" id="g{{g}}_p{{p}}_sprint_flag" onchange="toggleSprint('g{{g}}_p{{p}}')">
-        <option value="no">No</option>
-        <option value="si">Sì</option>
-      </select>
-
-      <div id="g{{g}}_p{{p}}_sprint_box" style="display:none; margin-top:10px;">
-        <label>Posizione Sprint:</label>
-        <select name="g{{g}}_p{{p}}_sprint_pos">
-          <option value="">--</option>
-          <option value="1">1°</option>
-          <option value="2">2°</option>
-          <option value="3">3°</option>
-          <option value="4">4°</option>
-          <option value="5">5°</option>
-          <option value="6">6°</option>
-          <option value="7">7°</option>
-          <option value="8">8°</option>
-        </select>
-      </div>
-      <hr>
-      {% endfor %}
-    </fieldset>
     <br>
-    {% endfor %}
-    <button type="submit">Invia risultati</button>
-  </form>
+    <a href="{{ url_for('home') }}">Torna alla home</a>
 </body>
 </html>
