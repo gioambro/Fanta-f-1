@@ -3,38 +3,33 @@ from werkzeug.security import generate_password_hash
 
 DB_FILE = "users.db"
 
+# Cancella e ricrea il DB
 conn = sqlite3.connect(DB_FILE)
 cur = conn.cursor()
 
-# Crea tabella utenti
+cur.execute("DROP TABLE IF EXISTS users")
 cur.execute("""
-CREATE TABLE IF NOT EXISTS users (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    username TEXT UNIQUE NOT NULL,
-    password TEXT NOT NULL,
-    role TEXT NOT NULL
-)
+    CREATE TABLE users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT UNIQUE NOT NULL,
+        password TEXT NOT NULL,
+        role TEXT NOT NULL
+    )
 """)
 
-# Inserisci admin
-cur.execute("INSERT OR IGNORE INTO users (username, password, role) VALUES (?, ?, ?)",
-            ("admin", generate_password_hash("1234"), "admin"))
-
-# Inserisci i giocatori
-giocatori = [
-    ("Alfarumeno", "1111"),
-    ("Stalloni", "2222"),
-    ("WC in Geriatria", "3333"),
-    ("Strolling Around", "4444"),
-    ("Spartaboyz", "5555"),
-    ("Vodkaredbull", "6666")
+# Lista utenti iniziali
+utenti = [
+    ("admin", generate_password_hash("1234"), "admin"),
+    ("Alfarumeno", generate_password_hash("1234"), "player"),
+    ("Stalloni", generate_password_hash("1234"), "player"),
+    ("WC in Geriatria", generate_password_hash("1234"), "player"),
+    ("Strolling Around", generate_password_hash("1234"), "player"),
+    ("Spartaboyz", generate_password_hash("1234"), "player"),
+    ("Vodkaredbull", generate_password_hash("1234"), "player"),
 ]
 
-for username, pwd in giocatori:
-    cur.execute("INSERT OR IGNORE INTO users (username, password, role) VALUES (?, ?, ?)",
-                (username, generate_password_hash(pwd), "player"))
-
+cur.executemany("INSERT INTO users (username, password, role) VALUES (?, ?, ?)", utenti)
 conn.commit()
 conn.close()
 
-print("✅ Database inizializzato con admin e giocatori!")
+print("✅ Database users.db creato con utenti iniziali!")
