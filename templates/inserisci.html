@@ -1,35 +1,89 @@
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <title>Inserisci Punteggi</title>
-    <style>
-        body { font-family: Arial, sans-serif; text-align: center; }
-        form { display: inline-block; margin-top: 20px; }
-        table { margin: auto; border-collapse: collapse; width: 50%; }
-        th, td { border: 1px solid black; padding: 8px; text-align: center; }
-        th { background-color: #f2f2f2; }
-    </style>
+    <title>Inserisci risultati della giornata</title>
+    <script>
+        function toggleSprint(id) {
+            const sprintDiv = document.getElementById("sprint_" + id);
+            const checkbox = document.getElementById("sprint_check_" + id);
+            sprintDiv.style.display = checkbox.checked ? "block" : "none";
+        }
+
+        function autoBonus(id) {
+            const pos = document.getElementById("pos_" + id).value;
+            if (pos === "1") {
+                document.getElementById("vittoria_" + id).checked = true;
+            } else if (pos === "2" || pos === "3") {
+                document.getElementById("podio_" + id).checked = true;
+            }
+        }
+    </script>
 </head>
 <body>
-    <h1>Inserisci i punti dei giocatori</h1>
-    <form method="POST">
-        <table>
-            <tr>
-                <th>Giocatore</th>
-                <th>Punti da aggiungere</th>
-            </tr>
-            {% for giocatore in nomi %}
-            <tr>
-                <td>{{ giocatore }}</td>
-                <td><input type="number" name="{{ giocatore }}" value="0"></td>
-            </tr>
-            {% endfor %}
-        </table>
-        <br>
-        <button type="submit">Aggiorna Classifica</button>
+    <h1>Inserisci risultati della giornata</h1>
+    <form method="POST" action="/inserisci">
+        {% for giocatore in giocatori %}
+            <fieldset>
+                <legend>{{ giocatore }}</legend>
+                {% for p in range(1, 3) %}
+                    <h3>Pilota {{ p }}</h3>
+                    <label>Posizione finale:</label>
+                    <input type="number" name="{{ giocatore }}_p{{p}}_pos" id="pos_{{giocatore}}_p{{p}}" min="1" max="20" onchange="autoBonus('{{giocatore}}_p{{p}}')"><br>
+
+                    <label>Griglia di partenza:</label>
+                    <input type="number" name="{{ giocatore }}_p{{p}}_griglia" min="1" max="20"><br>
+
+                    <label>Pole Position:</label>
+                    <input type="checkbox" name="{{ giocatore }}_p{{p}}_pole"><br>
+
+                    <label>Giro veloce:</label>
+                    <input type="checkbox" name="{{ giocatore }}_p{{p}}_fastlap"><br>
+
+                    <label>Driver of the day:</label>
+                    <input type="checkbox" name="{{ giocatore }}_p{{p}}_dotd"><br>
+
+                    <label>Fastest pit-stop:</label>
+                    <input type="checkbox" name="{{ giocatore }}_p{{p}}_pitstop"><br>
+
+                    <label>DNF:</label>
+                    <input type="checkbox" name="{{ giocatore }}_p{{p}}_dnf"><br>
+
+                    <label>Squalifica:</label>
+                    <input type="checkbox" name="{{ giocatore }}_p{{p}}_squal"><br>
+
+                    <label>Penalità ≥ 6s:</label>
+                    <input type="checkbox" name="{{ giocatore }}_p{{p}}_pen6"><br>
+
+                    <label>Penalità ≤ 5s:</label>
+                    <input type="checkbox" name="{{ giocatore }}_p{{p}}_pen5"><br>
+
+                    <label>Ultimo in gara:</label>
+                    <input type="checkbox" name="{{ giocatore }}_p{{p}}_ultimo"><br>
+
+                    <label>Non supera Q1:</label>
+                    <input type="checkbox" name="{{ giocatore }}_p{{p}}_q1"><br>
+
+                    <label>Vittoria GP:</label>
+                    <input type="checkbox" name="{{ giocatore }}_p{{p}}_vittoria" id="vittoria_{{giocatore}}_p{{p}}"><br>
+
+                    <label>Podio GP:</label>
+                    <input type="checkbox" name="{{ giocatore }}_p{{p}}_podio" id="podio_{{giocatore}}_p{{p}}"><br>
+
+                    <label>Ha corso la Sprint?</label>
+                    <input type="checkbox" id="sprint_check_{{giocatore}}_p{{p}}" onclick="toggleSprint('{{giocatore}}_p{{p}}')"><br>
+
+                    <div id="sprint_{{giocatore}}_p{{p}}" style="display:none; margin-left:20px;">
+                        <label>Posizione Sprint:</label>
+                        <input type="number" name="{{ giocatore }}_p{{p}}_sprint_pos" min="1" max="20"><br>
+                    </div>
+                {% endfor %}
+            </fieldset>
+            <br>
+        {% endfor %}
+        <button type="submit">Salva risultati</button>
     </form>
     <br>
-    <a href="{{ url_for('home') }}">Torna alla Home</a>
+    <a href="/">Torna alla home</a>
 </body>
 </html>
