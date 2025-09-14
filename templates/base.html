@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Fanta F1</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <nav>
+        <a href="{{ url_for('index') }}">Home</a>
+        {% if session.get("username") %}
+            <a href="{{ url_for('cambia_password') }}">Cambia Password</a>
+            <a href="{{ url_for('inserisci') }}">Inserisci Risultati</a>
+            {% if session.get("role") == "admin" %}
+                <a href="{{ url_for('admin') }}">Admin</a>
+            {% endif %}
+            <a href="{{ url_for('logout') }}">Logout ({{ session.get("username") }})</a>
+        {% else %}
+            <a href="{{ url_for('login') }}">Login</a>
+        {% endif %}
+    </nav>
+    <main>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <ul class="flashes">
+                {% for category, message in messages %}
+                    <li class="{{ category }}">{{ message }}</li>
+                {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>
