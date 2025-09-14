@@ -1,20 +1,32 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <meta charset="UTF-8">
-    <title>Risultati</title>
+  <meta charset="UTF-8">
+  <title>Risultati Inseriti</title>
 </head>
 <body>
-    <h1>Risultato Giornata</h1>
-    <p>{{ giocatore }} ha totalizzato <strong>{{ punti }}</strong> punti.</p>
-
-    <h2>Classifica Generale</h2>
-    <ol>
-        {% for g, p in classifica %}
-            <li>{{ g }} - {{ p }} punti</li>
-        {% endfor %}
-    </ol>
-
-    <a href="{{ url_for('inserisci') }}">Inserisci un altro risultato</a>
+  <h1>Risultati Inseriti</h1>
+  <table border="1">
+    <tr>
+      <th>Giocatore</th>
+      <th>Pilota</th>
+      <th>Punti</th>
+      <th>Posizione Finale</th>
+      <th>Griglia</th>
+      <th>Sprint</th>
+    </tr>
+    {% for r in risultati %}
+    <tr>
+      <td>{{ r.giocatore }}</td>
+      <td>{{ r.pilota }}</td>
+      <td>{{ r.punti }}</td>
+      <td>{{ r.posizione }}</td>
+      <td>{{ r.griglia }}</td>
+      <td>{{ r.sprint }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+  <br>
+  <a href="{{ url_for('index') }}">Torna alla classifica</a>
 </body>
 </html>
