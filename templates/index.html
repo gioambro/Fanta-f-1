@@ -4,19 +4,22 @@
   <meta charset="UTF-8">
   <title>Classifica Fanta F1</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    body { background-color: #121212; color: #f5f5f5; }
-    h1, h2 { color: #e10600; }
-    .card { background-color: #1e1e1e; border: 1px solid #333; }
+    body { background-color: #121212; color: #f0f0f0; font-family: 'Roboto Condensed', sans-serif; }
+    h1, h2 { color: #e10600; font-weight: 700; }
+    .card { background-color: #1c1c1c; border: 1px solid #333; color: #f0f0f0; }
+    table { color: #f0f0f0 !important; }
     .btn-primary { background-color: #e10600; border: none; }
     .btn-primary:hover { background-color: #b00500; }
   </style>
 </head>
 <body class="container py-4">
-  <h1 class="text-center mb-4">🏁 Classifica Fanta F1</h1>
+  <h1 class="mb-4">🏎️ Classifica Fanta F1</h1>
 
-  <div class="card p-3">
-    <table class="table table-dark table-striped text-center">
+  <div class="card p-3 mb-4">
+    <h2>Classifica Generale</h2>
+    <table class="table table-dark table-striped mt-3">
       <thead>
         <tr>
           <th>Giocatore</th>
@@ -24,19 +27,17 @@
         </tr>
       </thead>
       <tbody>
-        {% for g, p in classifica.items() %}
+        {% for nome, punti in classifica.items() %}
         <tr>
-          <td>{{ g }}</td>
-          <td>{{ p }}</td>
+          <td>{{ nome }}</td>
+          <td>{{ punti }}</td>
         </tr>
         {% endfor %}
       </tbody>
     </table>
   </div>
 
-  <div class="text-center mt-3">
-    <a href="/inserisci" class="btn btn-primary me-2">➕ Inserisci Risultati</a>
-    <a href="/risultati" class="btn btn-secondary">📊 Vedi Risultati</a>
-  </div>
+  <a href="{{ url_for('inserisci') }}" class="btn btn-primary">➕ Inserisci Risultati</a>
+  <a href="{{ url_for('risultati_page') }}" class="btn btn-secondary">📊 Vedi Risultati</a>
 </body>
 </html>
