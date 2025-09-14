@@ -1,46 +1,14 @@
 <!DOCTYPE html>
-<html lang="it">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Inserisci risultati giornata</title>
+    <title>Fanta Formula 1</title>
 </head>
 <body>
-    <h1>Inserisci risultati giornata</h1>
-    <form method="post">
+    <h1>Benvenuto al Fanta Formula 1</h1>
 
-        {% for g in range(1,7) %}
-        <fieldset>
-            <legend>Giocatore {{g}}</legend>
-
-            {% for p in range(1,3) %}
-            <h4>Pilota {{p}}</h4>
-            Posizione finale: <input type="number" name="g{{g}}_p{{p}}_pos" min="1" max="20"><br><br>
-
-            <!-- Bonus -->
-            Pole in qualifica GP (+2): <input type="checkbox" name="g{{g}}_p{{p}}_pole"><br>
-            Giro veloce in gara (+1): <input type="checkbox" name="g{{g}}_p{{p}}_fastest_lap"><br>
-            Driver of the Day (+1): <input type="checkbox" name="g{{g}}_p{{p}}_driver_day"><br>
-            Fastest pit stop (+2): <input type="checkbox" name="g{{g}}_p{{p}}_fastest_pit"><br>
-            Ultime due file ma a punti (+2): <input type="checkbox" name="g{{g}}_p{{p}}_back_to_points"><br>
-            Posizioni guadagnate (+0.5 ciascuna): <input type="number" name="g{{g}}_p{{p}}_pos_gain" min="0" value="0"><br>
-            Vittoria GP (+3): <input type="checkbox" name="g{{g}}_p{{p}}_win"><br>
-            Podio GP (+2): <input type="checkbox" name="g{{g}}_p{{p}}_podium"><br><br>
-
-            <!-- Malus -->
-            Squalifica (-5): <input type="checkbox" name="g{{g}}_p{{p}}_dsq"><br>
-            DNF (-3): <input type="checkbox" name="g{{g}}_p{{p}}_dnf"><br>
-            Penalità ≥6s (-4): <input type="checkbox" name="g{{g}}_p{{p}}_pen_6"><br>
-            Penalità ≤5s (-3): <input type="checkbox" name="g{{g}}_p{{p}}_pen_5"><br>
-            Ultimo in gara (-2): <input type="checkbox" name="g{{g}}_p{{p}}_last"><br>
-            Non supera Q1 (-1): <input type="checkbox" name="g{{g}}_p{{p}}_q1"><br>
-            Posizioni perse (-0.5 ciascuna): <input type="number" name="g{{g}}_p{{p}}_pos_lost" min="0" value="0"><br>
-            <hr>
-            {% endfor %}
-        </fieldset>
-        <br>
-        {% endfor %}
-
-        <input type="submit" value="Calcola punteggi">
-    </form>
+    <ul>
+        <li><a href="{{ url_for('inserisci') }}">Inserisci risultati giornata</a></li>
+        <li><a href="{{ url_for('risultati') }}">Vedi classifica generale</a></li>
+    </ul>
 </body>
 </html>
