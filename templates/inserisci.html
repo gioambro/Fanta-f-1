@@ -1,23 +1,32 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8">
-  <title>Inserisci Formazione</title>
+    <meta charset="UTF-8">
+    <title>Seleziona i tuoi piloti</title>
 </head>
 <body>
-  <h1>Inserisci i tuoi 2 piloti</h1>
-  <p>Giocatore: <strong>{{ user }}</strong></p>
+    <h1>Seleziona i piloti - {{ user }}</h1>
 
-  <form method="post">
-    <label>Pilota 1:</label>
-    <input type="text" name="pilota1" value="{{ formazione[0] if formazione|length > 0 else '' }}" required><br><br>
+    <form method="post">
+        <label>Pilota 1:</label>
+        <select name="pilota1" required>
+            {% for p in piloti %}
+            <option value="{{ p }}">{{ p }}</option>
+            {% endfor %}
+        </select>
+        <br><br>
 
-    <label>Pilota 2:</label>
-    <input type="text" name="pilota2" value="{{ formazione[1] if formazione|length > 1 else '' }}" required><br><br>
+        <label>Pilota 2:</label>
+        <select name="pilota2" required>
+            {% for p in piloti %}
+            <option value="{{ p }}">{{ p }}</option>
+            {% endfor %}
+        </select>
+        <br><br>
 
-    <button type="submit">Salva Formazione</button>
-  </form>
+        <button type="submit">Conferma</button>
+    </form>
 
-  <p><a href="{{ url_for('index') }}">⬅ Torna alla Home</a></p>
+    <p><a href="{{ url_for('index') }}">⬅ Torna alla home</a></p>
 </body>
 </html>
