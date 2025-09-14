@@ -2,40 +2,95 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <title>Inserisci Risultati</title>
+    <title>Inserisci risultati</title>
 </head>
 <body>
     <h1>Inserisci risultati della giornata</h1>
-    <form method="POST">
-        {% for team in squadre %}
-            <h2 style="color:red">{{ team }}</h2>
-            {% for pilota in [1,2] %}
-                <fieldset>
-                    <legend>Pilota {{ pilota }}</legend>
-                    
+    <form method="post">
+        {% for squadra, piloti in squadre.items() %}
+            <h2 style="color:red;">{{ squadra }}</h2>
+            {% for pilota in range(1, 3) %}
+                <div style="border:1px solid #ccc; padding:10px; margin:10px 0;">
+                    <h3>Pilota {{ pilota }}</h3>
+
                     <label>Griglia di partenza:</label>
-                    <input type="number" name="{{ team }}_p{{ pilota }}_griglia" value="1" min="1" max="20"><br>
+                    <input type="number" name="griglia_{{ squadra }}_{{ pilota }}" min="1" max="20" required><br>
 
                     <label>Posizione finale:</label>
-                    <input type="number" name="{{ team }}_p{{ pilota }}_arrivo" value="1" min="1" max="20"><br>
+                    <input type="number" name="posizione_{{ squadra }}_{{ pilota }}" min="1" max="20" required><br>
 
                     <label>Gara sprint?</label>
-                    <select name="{{ team }}_p{{ pilota }}_sprint">
-                        <option>No</option>
-                        <option>Si</option>
+                    <select name="sprint_{{ squadra }}_{{ pilota }}">
+                        <option value="no">No</option>
+                        <option value="si">Sì</option>
                     </select><br>
 
-                    <label>Altri bonus (es. giro veloce):</label>
-                    <input type="number" name="{{ team }}_p{{ pilota }}_bonus" value="0"><br>
+                    <h4>Bonus</h4>
+                    <label>Pole position?</label>
+                    <select name="pole_{{ squadra }}_{{ pilota }}">
+                        <option value="no">No</option>
+                        <option value="si">Sì</option>
+                    </select><br>
 
-                    <label>Altri malus (es. penalità):</label>
-                    <input type="number" name="{{ team }}_p{{ pilota }}_malus" value="0"><br>
-                </fieldset>
+                    <label>Giro veloce?</label>
+                    <select name="giroveloce_{{ squadra }}_{{ pilota }}">
+                        <option value="no">No</option>
+                        <option value="si">Sì</option>
+                    </select><br>
+
+                    <label>Driver of the Day?</label>
+                    <select name="dotd_{{ squadra }}_{{ pilota }}">
+                        <option value="no">No</option>
+                        <option value="si">Sì</option>
+                    </select><br>
+
+                    <label>Fastest pit-stop?</label>
+                    <select name="pitstop_{{ squadra }}_{{ pilota }}">
+                        <option value="no">No</option>
+                        <option value="si">Sì</option>
+                    </select><br>
+
+                    <h4>Malus</h4>
+                    <label>Squalifica?</label>
+                    <select name="squalifica_{{ squadra }}_{{ pilota }}">
+                        <option value="no">No</option>
+                        <option value="si">Sì</option>
+                    </select><br>
+
+                    <label>DNF (ritiro)?</label>
+                    <select name="dnf_{{ squadra }}_{{ pilota }}">
+                        <option value="no">No</option>
+                        <option value="si">Sì</option>
+                    </select><br>
+
+                    <label>Penalità ≥ 6 secondi?</label>
+                    <select name="penalita6_{{ squadra }}_{{ pilota }}">
+                        <option value="no">No</option>
+                        <option value="si">Sì</option>
+                    </select><br>
+
+                    <label>Penalità ≤ 5 secondi?</label>
+                    <select name="penalita5_{{ squadra }}_{{ pilota }}">
+                        <option value="no">No</option>
+                        <option value="si">Sì</option>
+                    </select><br>
+
+                    <label>Ultimo in gara?</label>
+                    <select name="ultimo_{{ squadra }}_{{ pilota }}">
+                        <option value="no">No</option>
+                        <option value="si">Sì</option>
+                    </select><br>
+
+                    <label>Non supera Q1?</label>
+                    <select name="q1_{{ squadra }}_{{ pilota }}">
+                        <option value="no">No</option>
+                        <option value="si">Sì</option>
+                    </select><br>
+                </div>
             {% endfor %}
-            <hr>
         {% endfor %}
         <button type="submit">Salva risultati</button>
     </form>
-    <p><a href="{{ url_for('index') }}">Torna alla home</a></p>
+    <a href="{{ url_for('index') }}">Torna alla home</a>
 </body>
 </html>
