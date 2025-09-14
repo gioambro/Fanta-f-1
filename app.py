@@ -2,85 +2,101 @@ from flask import Flask, render_template, request, redirect, url_for
 
 app = Flask(__name__)
 
-# Squadre e piloti (puoi modificare i nomi a piacere)
-squadre = {
-    "Alfarumeno": ["Pilota 1", "Pilota 2"],
-    "WC in Geriatria": ["Pilota 1", "Pilota 2"]
+# classifica generale
+classifica_generale = {
+    "Alfarumeno": 12,
+    "Stalloni": 10,
+    "WC in Geriatria": 10,
+    "Strolling Around": 5,
+    "Spartaboyz": 5,
+    "Vodkaredbull": 2
 }
 
-risultati = {}
+# punteggi sprint
+sprint_points = {1: 8, 2: 7, 3: 6, 4: 5, 5: 4, 6: 3, 7: 2, 8: 1}
 
-# Funzione di calcolo punteggi
-def calcola_punti(form, squadra, pilota):
-    griglia = int(form.get(f"griglia_{squadra}_{pilota}"))
-    posizione = int(form.get(f"posizione_{squadra}_{pilota}"))
-    sprint = form.get(f"sprint_{squadra}_{pilota}") == "si"
-
+# calcolo punteggio totale
+def calcola_punteggio(dati):
     punti = 0
 
-    if not sprint:
-        # BONUS
-        if form.get(f"pole_{squadra}_{pilota}") == "si":
-            punti += 2
-        if form.get(f"giroveloce_{squadra}_{pilota}") == "si":
-            punti += 1
-        if form.get(f"dotd_{squadra}_{pilota}") == "si":
-            punti += 1
-        if form.get(f"pitstop_{squadra}_{pilota}") == "si":
-            punti += 2
-        if griglia >= 19 and posizione <= 10:
-            punti += 2
-        if posizione < griglia:
-            punti += (griglia - posizione) * 0.5
-        if posizione == 1:
-            punti += 3
-        elif posizione in [2, 3]:
-            punti += 2
+    # Sprint
+    if dati.get("sprint") == "si" and dati.get("posizione_sprint"):
+        pos = int(dati["posizione_sprint"])
+        if pos in sprint_points:
+            punti += sprint_points[pos]
 
-        # MALUS
-        if form.get(f"squalifica_{squadra}_{pilota}") == "si":
-            punti -= 5
-        if form.get(f"dnf_{squadra}_{pilota}") == "si":
-            punti -= 3
-        else:
-            if form.get(f"penalita6_{squadra}_{pilota}") == "si":
-                punti -= 4
-            if form.get(f"penalita5_{squadra}_{pilota}") == "si":
-                punti -= 3
-            if form.get(f"ultimo_{squadra}_{pilota}") == "si":
-                punti -= 2
-            if form.get(f"q1_{squadra}_{pilota}") == "si":
-                punti -= 1
-            if posizione > griglia:
-                punti -= (posizione - griglia) * 0.5
+    # Vittoria/podio automatici da posizione GP
+    pos_finale = int(dati["posizione_finale"])
+    griglia = int(dati["griglia"])
+
+    if pos_finale == 1:
+        punti += 3  # vittoria
+    elif pos_finale in [2, 3]:
+        punti += 2  # podio
+
+    # differenza posizioni
+    if dati.get("dnf") != "si":  # se non è DNF
+        diff = griglia - pos_finale
+        if diff > 0:
+            punti += diff * 0.5
+        elif diff < 0:
+            punti += diff * 0.5
+
+    # bonus sì/no
+    if dati.get("pole") == "si":
+        punti += 2
+    if dati.get("giro_veloce") == "si":
+        punti += 1
+    if dati.get("driver_day") == "si":
+        punti += 1
+    if dati.get("pit_stop") == "si":
+        punti += 2
+    if dati.get("ultime_file") == "si":
+        punti += 2
+
+    # malus sì/no
+    if dati.get("squalifica") == "si":
+        punti -= 5
+    if dati.get("dnf") == "si":
+        punti -= 3
+    if dati.get("penalita6") == "si":
+        punti -= 4
+    if dati.get("penalita5") == "si":
+        punti -= 3
+    if dati.get("ultimo") == "si" and dati.get("dnf") != "si":
+        punti -= 2
+    if dati.get("no_q1") == "si":
+        punti -= 1
 
     return punti
 
 
 @app.route("/")
 def index():
-    return render_template("index.html", squadre=squadre)
+    return render_template("index.html")
 
 
 @app.route("/inserisci", methods=["GET", "POST"])
 def inserisci():
-    global risultati
     if request.method == "POST":
-        risultati = {}
-        for squadra in squadre:
-            risultati[squadra] = []
-            for pilota in range(1, 3):
-                punti = calcola_punti(request.form, squadra, pilota)
-                risultati[squadra].append(punti)
-        return redirect(url_for("risultati_view"))
-    return render_template("inserisci.html", squadre=squadre)
+        giocatore = request.form["giocatore"]
+        punti = calcola_punteggio(request.form)
+        classifica_generale[giocatore] += punti
+        return redirect(url_for("risultati", giocatore=giocatore, punti=punti))
+    return render_template("inserisci.html", giocatori=classifica_generale.keys())
 
 
 @app.route("/risultati")
-def risultati_view():
-    totali = {s: sum(risultati.get(s, [0, 0])) for s in squadre}
-    return render_template("risultati.html", risultati=risultati, totali=totali)
+def risultati():
+    giocatore = request.args.get("giocatore")
+    punti = request.args.get("punti")
+    return render_template("risultati.html",
+                           giocatore=giocatore,
+                           punti=punti,
+                           classifica=sorted(classifica_generale.items(),
+                                             key=lambda x: x[1],
+                                             reverse=True))
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    app.run(debug=True)
