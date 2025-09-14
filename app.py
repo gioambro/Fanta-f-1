@@ -25,6 +25,18 @@ def get_user(username):
     return user
 
 # -----------------------------
+# Dizionario piloti per giocatore
+# -----------------------------
+piloti_giocatori = {
+    "Alfarumeno": ["Norris", "Tsunoda", "Colapinto"],
+    "Strolling Around": ["Russell", "Gasly", "Antonelli"],
+    "Stalloni": ["Piastri", "Lawson", "Ocon"],
+    "WC in Geriatria": ["Alonso", "Hamilton", "Hadjar"],
+    "Vodkaredbull": ["Verstappen", "Sainz", "Bortoleto"],
+    "Spartaboyz": ["Leclerc", "Bearman", "Albon"]
+}
+
+# -----------------------------
 # Rotte di autenticazione
 # -----------------------------
 @app.route("/login", methods=["GET", "POST"])
@@ -126,11 +138,8 @@ def admin():
     return render_template("admin.html", users=users)
 
 # -----------------------------
-# Inserimento risultati (con limite 2 piloti)
+# Inserimento piloti
 # -----------------------------
-# archivio formazioni in RAM per ora
-formazioni = {}
-
 @app.route("/inserisci", methods=["GET", "POST"])
 def inserisci():
     if "username" not in session:
@@ -138,17 +147,24 @@ def inserisci():
 
     user = session["username"]
 
-    if request.method == "POST":
-        pilota1 = request.form["pilota1"]
-        pilota2 = request.form["pilota2"]
-
-        # Controllo limite 2 piloti
-        formazioni[user] = [pilota1, pilota2]
-
-        flash("Formazione salvata con successo!", "success")
+    if user not in piloti_giocatori:
+        flash("Il tuo account non ha piloti assegnati!", "danger")
         return redirect(url_for("index"))
 
-    return render_template("inserisci.html", user=user, formazione=formazioni.get(user, []))
+    if request.method == "POST":
+        pilota1 = request.form.get("pilota1")
+        pilota2 = request.form.get("pilota2")
+
+        if pilota1 == pilota2:
+            flash("❌ Devi scegliere due piloti diversi!", "danger")
+            return redirect(url_for("inserisci"))
+
+        flash(f"✅ Hai selezionato {pilota1} e {pilota2}", "success")
+        # TODO: Salvare su DB le formazioni
+
+        return redirect(url_for("index"))
+
+    return render_template("inserisci.html", user=user, piloti=piloti_giocatori[user])
 
 # -----------------------------
 # Avvio
