@@ -7,16 +7,30 @@
 <body>
     <h1>Inserisci risultati della giornata</h1>
     <form method="POST">
-        {% for giocatore in giocatori %}
-            <h2>{{ giocatore }}</h2>
-            <label>Punti base:</label>
-            <input type="number" name="{{ giocatore }}_punti" value="0"><br>
+        {% for team in squadre %}
+            <h2 style="color:red">{{ team }}</h2>
+            {% for pilota in [1,2] %}
+                <fieldset>
+                    <legend>Pilota {{ pilota }}</legend>
+                    <label>Griglia di partenza:</label>
+                    <input type="number" name="{{ team }}_p{{ pilota }}_griglia" value="1" min="1" max="20"><br>
 
-            <label>Bonus:</label>
-            <input type="number" name="{{ giocatore }}_bonus" value="0"><br>
+                    <label>Posizione finale:</label>
+                    <input type="number" name="{{ team }}_p{{ pilota }}_arrivo" value="1" min="1" max="20"><br>
 
-            <label>Malus:</label>
-            <input type="number" name="{{ giocatore }}_malus" value="0"><br>
+                    <label>Gara sprint?</label>
+                    <select name="{{ team }}_p{{ pilota }}_sprint">
+                        <option>No</option>
+                        <option>Si</option>
+                    </select><br>
+
+                    <label>Altri bonus (es. giro veloce):</label>
+                    <input type="number" name="{{ team }}_p{{ pilota }}_bonus" value="0"><br>
+
+                    <label>Altri malus (es. penalità):</label>
+                    <input type="number" name="{{ team }}_p{{ pilota }}_malus" value="0"><br>
+                </fieldset>
+            {% endfor %}
             <hr>
         {% endfor %}
         <button type="submit">Salva risultati</button>
