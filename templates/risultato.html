@@ -2,30 +2,22 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <title>Risultati</title>
+    <title>Classifica</title>
 </head>
 <body>
-    <h1>Classifica</h1>
-
-    {% if classifica_giornata %}
-        <h2>Giornata {{ giornata }}</h2>
-        <ul>
-            {% for giocatore, punti in classifica_giornata.items() %}
-                <li>{{ giocatore }}: {{ punti }} punti</li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>Nessun risultato inserito per l'ultima giornata.</p>
-    {% endif %}
-
-    <h2>Classifica Generale</h2>
-    <ul>
-        {% for giocatore, punti in classifica_generale.items() %}
-            <li>{{ giocatore }}: {{ punti }} punti</li>
+    <h1>Classifica Generale</h1>
+    <table border="1">
+        <tr>
+            <th>Giocatore</th>
+            <th>Punti</th>
+        </tr>
+        {% for giocatore, punti in giocatori.items() %}
+        <tr>
+            <td>{{ giocatore }}</td>
+            <td>{{ punti }}</td>
+        </tr>
         {% endfor %}
-    </ul>
-
-    <br>
+    </table>
     <a href="{{ url_for('index') }}">Torna alla home</a>
 </body>
 </html>
