@@ -1,86 +1,160 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <meta charset="UTF-8">
-    <title>Inserisci Risultati</title>
-    <script>
-        function toggleSprint() {
-            let sprint = document.getElementById("sprint");
-            let div = document.getElementById("sprint_pos");
-            div.style.display = sprint.value === "si" ? "block" : "none";
-        }
-    </script>
+  <meta charset="UTF-8">
+  <title>Inserisci Risultati</title>
 </head>
 <body>
-    <h1>Inserisci Risultati</h1>
-    <form method="post">
-        <label>Giocatore:</label>
-        <select name="giocatore">
-            {% for g in giocatori %}
-                <option value="{{ g }}">{{ g }}</option>
-            {% endfor %}
-        </select><br><br>
+  <h1>Inserisci risultati piloti</h1>
+  <form action="/salva" method="post">
+    <label>Giocatore:</label>
+    <input type="text" name="giocatore" required><br><br>
 
-        <h2>Gran Premio</h2>
-        <label>Posizione finale:</label>
-        <input type="number" name="posizione_finale" required><br>
+    <label>Pilota:</label>
+    <input type="text" name="pilota" required><br><br>
 
-        <label>Griglia di partenza:</label>
-        <input type="number" name="griglia" required><br><br>
+    <label>Griglia di partenza:</label>
+    <input type="number" name="griglia" min="1" max="20"><br><br>
 
-        <h3>Bonus</h3>
-        <label>Pole Position:</label>
-        <select name="pole"><option value="no">No</option><option value="si">Si</option></select><br>
+    <label>Posizione finale:</label>
+    <input type="number" name="posizione" min="1" max="20"><br><br>
 
-        <label>Giro veloce:</label>
-        <select name="giro_veloce"><option value="no">No</option><option value="si">Si</option></select><br>
+    <!-- Sprint -->
+    <label>Gara Sprint?</label>
+    <select name="sprint" id="sprint" onchange="toggleSprint()">
+      <option value="no">No</option>
+      <option value="si">Sì</option>
+    </select>
+    <br>
 
-        <label>Driver of the Day:</label>
-        <select name="driver_day"><option value="no">No</option><option value="si">Si</option></select><br>
+    <div id="sprint_pos_div" style="display:none;">
+      <label>Posizione Sprint:</label>
+      <select name="sprint_pos">
+        <option value="">-- Seleziona --</option>
+        <option value="1">1 (8 pt)</option>
+        <option value="2">2 (7 pt)</option>
+        <option value="3">3 (6 pt)</option>
+        <option value="4">4 (5 pt)</option>
+        <option value="5">5 (4 pt)</option>
+        <option value="6">6 (3 pt)</option>
+        <option value="7">7 (2 pt)</option>
+        <option value="8">8 (1 pt)</option>
+      </select>
+    </div>
+    <br><hr>
 
-        <label>Fastest Pit-stop:</label>
-        <select name="pit_stop"><option value="no">No</option><option value="si">Si</option></select><br>
+    <h2>Bonus</h2>
 
-        <label>Ultime due file ma a punti:</label>
-        <select name="ultime_file"><option value="no">No</option><option value="si">Si</option></select><br><br>
+    <label>Pole in qualifica GP (+2):</label>
+    <select name="pole">
+      <option value="no">No</option>
+      <option value="si">Sì</option>
+    </select><br>
 
-        <h3>Malus</h3>
-        <label>Squalifica:</label>
-        <select name="squalifica"><option value="no">No</option><option value="si">Si</option></select><br>
+    <label>Giro veloce in gara (+1):</label>
+    <input type="checkbox" name="fastest_lap" class="fastest_lap"><br>
 
-        <label>DNF:</label>
-        <select name="dnf"><option value="no">No</option><option value="si">Si</option></select><br>
+    <label>Driver of the Day (+1):</label>
+    <input type="checkbox" name="driver_day" class="driver_day"><br>
 
-        <label>Penalità >= 6s:</label>
-        <select name="penalita6"><option value="no">No</option><option value="si">Si</option></select><br>
+    <label>Fastest pit-stop (+2):</label>
+    <input type="checkbox" name="fastest_pit" class="fastest_pit"><br>
 
-        <label>Penalità <= 5s:</label>
-        <select name="penalita5"><option value="no">No</option><option value="si">Si</option></select><br>
+    <label>Parte dalle ultime due file ma va a punti (+2):</label>
+    <select name="rimonta">
+      <option value="no">No</option>
+      <option value="si">Sì</option>
+    </select><br>
 
-        <label>Ultimo in gara:</label>
-        <select name="ultimo"><option value="no">No</option><option value="si">Si</option></select><br>
+    <label>Posizioni guadagnate (+0,5 per posizione):</label>
+    <select name="pos_guadagnate">
+      <option value="no">No</option>
+      <option value="si">Sì</option>
+    </select><br>
 
-        <label>Non supera Q1:</label>
-        <select name="no_q1"><option value="no">No</option><option value="si">Si</option></select><br><br>
+    <label>Vittoria GP (+3):</label>
+    <select name="vittoria">
+      <option value="no">No</option>
+      <option value="si">Sì</option>
+    </select><br>
 
-        <h2>Sprint</h2>
-        <label>Sprint disputata?</label>
-        <select id="sprint" name="sprint" onchange="toggleSprint()">
-            <option value="no">No</option>
-            <option value="si">Si</option>
-        </select><br><br>
+    <label>Podio GP (2°/3° posto) (+2):</label>
+    <select name="podio">
+      <option value="no">No</option>
+      <option value="si">Sì</option>
+    </select><br>
 
-        <div id="sprint_pos" style="display:none;">
-            <label>Posizione Sprint:</label>
-            <select name="posizione_sprint">
-                <option value="">--</option>
-                {% for i in range(1,9) %}
-                <option value="{{ i }}">{{ i }}</option>
-                {% endfor %}
-            </select><br><br>
-        </div>
+    <br><hr>
+    <h2>Malus</h2>
 
-        <button type="submit">Invia</button>
-    </form>
+    <label>Squalifica (-5):</label>
+    <select name="squalifica">
+      <option value="no">No</option>
+      <option value="si">Sì</option>
+    </select><br>
+
+    <label>DNF (-3):</label>
+    <select name="dnf">
+      <option value="no">No</option>
+      <option value="si">Sì</option>
+    </select><br>
+
+    <label>Penalità ≥ 6 secondi (-4):</label>
+    <select name="pen6">
+      <option value="no">No</option>
+      <option value="si">Sì</option>
+    </select><br>
+
+    <label>Penalità ≤ 5 secondi (-3):</label>
+    <select name="pen5">
+      <option value="no">No</option>
+      <option value="si">Sì</option>
+    </select><br>
+
+    <label>Ultimo in gara (-2):</label>
+    <input type="checkbox" name="last_place" class="last_place"><br>
+
+    <label>Non supera il Q1 (-1):</label>
+    <select name="q1">
+      <option value="no">No</option>
+      <option value="si">Sì</option>
+    </select><br>
+
+    <label>Posizioni perse (-0,5 per posizione):</label>
+    <select name="pos_perse">
+      <option value="no">No</option>
+      <option value="si">Sì</option>
+    </select><br>
+
+    <br><hr>
+    <button type="submit">Salva risultati</button>
+  </form>
+
+  <script>
+  function toggleSprint() {
+    let sprintSelect = document.getElementById("sprint").value;
+    let sprintDiv = document.getElementById("sprint_pos_div");
+    sprintDiv.style.display = (sprintSelect === "si") ? "block" : "none";
+  }
+
+  function enforceUniqueBonus(className, message) {
+    let checkboxes = document.querySelectorAll("." + className);
+    checkboxes.forEach(cb => {
+      cb.addEventListener("change", function() {
+        if (this.checked) {
+          checkboxes.forEach(other => {
+            if (other !== this) other.checked = false;
+          });
+          alert(message);
+        }
+      });
+    });
+  }
+
+  enforceUniqueBonus("driver_day", "⚠️ Driver of the Day può essere assegnato a un solo pilota.");
+  enforceUniqueBonus("fastest_lap", "⚠️ Il giro veloce può essere assegnato a un solo pilota.");
+  enforceUniqueBonus("fastest_pit", "⚠️ Il fastest pit-stop può essere assegnato a un solo pilota.");
+  enforceUniqueBonus("last_place", "⚠️ L'ultimo in gara può essere assegnato a un solo pilota.");
+  </script>
 </body>
 </html>
