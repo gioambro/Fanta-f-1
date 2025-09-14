@@ -1,9 +1,64 @@
-{% extends "base.html" %}
-{% block content %}
-<h2>Benvenuto in Fanta F1</h2>
-{% if user %}
-    <p>Ciao {{ user }}! Ruolo: {{ role }}</p>
-{% else %}
-    <p>Effettua il <a href="{{ url_for('login') }}">login</a> per continuare.</p>
-{% endif %}
-{% endblock %}
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Home - Fanta F1</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            background-color: #121212;
+            font-family: Arial, sans-serif;
+            color: #f0f0f0;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #ff0000;
+        }
+
+        .card {
+            background: #1e1e1e;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 15px rgba(255, 0, 0, 0.4);
+            margin: 20px auto;
+            width: 400px;
+        }
+
+        a {
+            display: block;
+            background: #ff0000;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        a:hover {
+            background: #cc0000;
+        }
+    </style>
+</head>
+<body>
+    <h1>Benvenuto in Fanta F1</h1>
+
+    {% if user %}
+        <p>Ciao, <strong>{{ user }}</strong>!</p>
+        <div class="card">
+            <a href="{{ url_for('inserisci') }}">Inserisci Formazione</a>
+            <a href="{{ url_for('cambia_password') }}">Cambia Password</a>
+            {% if role == 'admin' %}
+                <a href="{{ url_for('admin') }}">Pannello Admin</a>
+            {% endif %}
+            <a href="{{ url_for('logout') }}">Logout</a>
+        </div>
+    {% else %}
+        <div class="card">
+            <a href="{{ url_for('login') }}">Login</a>
+        </div>
+    {% endif %}
+</body>
+</html>
