@@ -1,33 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Risultati Fanta Formula 1</title>
+    <title>Classifica Generale</title>
 </head>
 <body>
-    <h1>Risultati della giornata</h1>
+    <h1>Classifica Generale</h1>
 
-    {% if classifica_giornata %}
-        <table border="1" cellpadding="5">
-            <tr>
-                <th>Giocatore</th>
-                <th>Punti giornata</th>
-            </tr>
-            {% for giocatore, punti in classifica_giornata.items() %}
-            <tr>
-                <td>{{ giocatore }}</td>
-                <td>{{ punti }}</td>
-            </tr>
-            {% endfor %}
-        </table>
-    {% else %}
-        <p>Nessun risultato inserito per questa giornata.</p>
-    {% endif %}
-
-    <h2>Classifica generale</h2>
     <table border="1" cellpadding="5">
         <tr>
             <th>Giocatore</th>
-            <th>Punti totali</th>
+            <th>Punti</th>
         </tr>
         {% for giocatore, punti in classifica_generale.items() %}
         <tr>
