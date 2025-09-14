@@ -56,11 +56,11 @@ def salva():
     # ---- Bonus ----
     if request.form.get("pole") == "si":
         punti += 2
-    if request.form.get("fastest_lap"):
+    if request.form.get("fastest_lap") == "si":
         punti += 1
-    if request.form.get("driver_day"):
+    if request.form.get("driver_day") == "si":
         punti += 1
-    if request.form.get("fastest_pit"):
+    if request.form.get("fastest_pit") == "si":
         punti += 2
     if request.form.get("rimonta") == "si":
         punti += 2
@@ -80,7 +80,7 @@ def salva():
         punti -= 4
     if request.form.get("pen5") == "si":
         punti -= 3
-    if request.form.get("last_place"):
+    if request.form.get("last_place") == "si":
         punti -= 2
     if request.form.get("q1") == "si":
         punti -= 1
