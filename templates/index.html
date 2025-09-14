@@ -1,28 +1,9 @@
-<!DOCTYPE html>
-<html lang="it">
-<head>
-  <meta charset="UTF-8">
-  <title>Classifica</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
-  <div class="container">
-    <h1>Classifica Fanta F1</h1>
-    <table>
-      <tr>
-        <th>Giocatore</th>
-        <th>Punti</th>
-      </tr>
-      {% for giocatore, punti in classifica.items() %}
-      <tr>
-        <td>{{ giocatore }}</td>
-        <td>{{ punti }}</td>
-      </tr>
-      {% endfor %}
-    </table>
-    <br>
-    <a href="{{ url_for('inserisci') }}" class="btn">Inserisci risultati</a>
-    <a href="{{ url_for('risultati_page') }}" class="btn">Vedi risultati</a>
-  </div>
-</body>
-</html>
+{% extends "base.html" %}
+{% block content %}
+<h2>Benvenuto in Fanta F1</h2>
+{% if user %}
+    <p>Ciao {{ user }}! Ruolo: {{ role }}</p>
+{% else %}
+    <p>Effettua il <a href="{{ url_for('login') }}">login</a> per continuare.</p>
+{% endif %}
+{% endblock %}
