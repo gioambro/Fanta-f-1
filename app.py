@@ -1,121 +1,70 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for
+import json
+import os
 
 app = Flask(__name__)
 
-# Variabili globali
-classifiche_giornate = []
-classifica_generale = {f"Giocatore {i}": 0 for i in range(1, 7)}
+# File di salvataggio
+FILE_NOMI = "nomi_giocatori.json"
+FILE_STORICO = "storico.json"
 
-# ----------------------------
-# FUNZIONI DI CALCOLO
-# ----------------------------
-def calcola_sprint(posizione):
-    """Restituisce i punti Sprint in base alla posizione"""
-    punti_sprint = {1: 8, 2: 7, 3: 6, 4: 5, 5: 4, 6: 3, 7: 2, 8: 1}
-    return punti_sprint.get(posizione, 0)
+# Dati iniziali
+NOMI_DEFAULT = [
+    "Alfarumeno",
+    "Stalloni",
+    "WC in Geriatria",
+    "Strolling Around",
+    "Spartaboyz",
+    "Vodkaredbull"
+]
 
-def calcola_punteggio(dati):
-    """Calcola i punti GP + Sprint per un pilota"""
-    punti = 0
+CLASSIFICA_DEFAULT = {
+    "Alfarumeno": 12,
+    "Stalloni": 10,
+    "WC in Geriatria": 10,
+    "Strolling Around": 5,
+    "Spartaboyz": 5,
+    "Vodkaredbull": 2
+}
 
-    # --- Posizione finale GP ---
-    pos = dati.get("posizione")
-    if pos:
-        pos = int(pos)
-        if pos == 1:
-            punti += 3   # Vittoria
-        elif pos in [2, 3]:
-            punti += 2   # Podio
+# Funzione per caricare JSON
+def carica_dati(file, default):
+    if os.path.exists(file):
+        with open(file, "r") as f:
+            return json.load(f)
+    else:
+        with open(file, "w") as f:
+            json.dump(default, f)
+        return default
 
-    # --- Bonus vari ---
-    if dati.get("pole"): punti += 2
-    if dati.get("fastest_lap"): punti += 1
-    if dati.get("driver_day"): punti += 1
-    if dati.get("fastest_pit"): punti += 2
+# Carico dati all'avvio
+nomi_giocatori = carica_dati(FILE_NOMI, NOMI_DEFAULT)
+classifica_generale = carica_dati(FILE_STORICO, CLASSIFICA_DEFAULT)
 
-    # --- Malus ---
-    if dati.get("dnf"): punti -= 3
-    if dati.get("squalifica"): punti -= 5
-    if dati.get("pen_6"): punti -= 4
-    if dati.get("pen_5"): punti -= 3
-    if dati.get("ultimo"): punti -= 2
-    if dati.get("no_q1"): punti -= 1
-
-    # --- Posizioni guadagnate/perse ---
-    griglia = dati.get("griglia")
-    if pos and griglia:
-        griglia = int(griglia)
-        delta = griglia - pos
-        if delta > 0:   # guadagnate
-            punti += 0.5 * delta
-        elif delta < 0: # perse
-            punti += 0.5 * abs(delta)
-
-    # --- Sprint ---
-    sprint_flag = dati.get("sprint_flag")
-    sprint_pos = dati.get("sprint_pos")
-    if sprint_flag == "si" and sprint_pos:
-        punti += calcola_sprint(int(sprint_pos))
-
-    return punti
-
-# ----------------------------
-# ROUTES
-# ----------------------------
 @app.route("/")
 def home():
     return render_template("index.html")
 
 @app.route("/inserisci", methods=["GET", "POST"])
 def inserisci():
-    global classifiche_giornate, classifica_generale
-
     if request.method == "POST":
-        classifica_giornata = {}
+        # Qui puoi mettere la logica per calcolare i punteggi della giornata
+        # Per ora aggiorniamo solo la classifica con valori di esempio
+        for nome in nomi_giocatori:
+            classifica_generale[nome] += 0  # <--- qui va inserito il punteggio calcolato
 
-        for g in range(1, 7):
-            totale_giocatore = 0
+        # Salvo aggiornamenti
+        with open(FILE_STORICO, "w") as f:
+            json.dump(classifica_generale, f)
 
-            # Calcolo per 2 piloti
-            for p in range(1, 3):
-                dati = {
-                    "posizione": request.form.get(f"g{g}_p{p}_pos"),
-                    "griglia": request.form.get(f"g{g}_p{p}_griglia"),
-                    "pole": request.form.get(f"g{g}_p{p}_pole"),
-                    "fastest_lap": request.form.get(f"g{g}_p{p}_fastest_lap"),
-                    "driver_day": request.form.get(f"g{g}_p{p}_driver_day"),
-                    "fastest_pit": request.form.get(f"g{g}_p{p}_fastest_pit"),
-                    "dnf": request.form.get(f"g{g}_p{p}_dnf"),
-                    "squalifica": request.form.get(f"g{g}_p{p}_squalifica"),
-                    "pen_6": request.form.get(f"g{g}_p{p}_pen_6"),
-                    "pen_5": request.form.get(f"g{g}_p{p}_pen_5"),
-                    "ultimo": request.form.get(f"g{g}_p{p}_ultimo"),
-                    "no_q1": request.form.get(f"g{g}_p{p}_no_q1"),
-                    "sprint_flag": request.form.get(f"g{g}_p{p}_sprint_flag"),
-                    "sprint_pos": request.form.get(f"g{g}_p{p}_sprint_pos")
-                }
+        return redirect(url_for("risultati"))
 
-                punti_pilota = calcola_punteggio(dati)
-                totale_giocatore += punti_pilota
+    return render_template("inserisci.html", nomi=nomi_giocatori)
 
-            giocatore = f"Giocatore {g}"
-            classifica_giornata[giocatore] = totale_giocatore
-            classifica_generale[giocatore] += totale_giocatore
-
-        classifiche_giornate.append(classifica_giornata)
-
-        return render_template(
-            "risultato.html",
-            giornata_n=len(classifiche_giornate),
-            classifica_giornata=classifica_giornata,
-            classifica_generale=classifica_generale
-        )
-
-    return render_template("inserisci.html")
-
-@app.route("/classifica")
-def classifica():
-    return render_template("classifica.html", classifica_generale=classifica_generale)
+@app.route("/risultati")
+def risultati():
+    return render_template("risultato.html",
+                           classifica_generale=classifica_generale)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
