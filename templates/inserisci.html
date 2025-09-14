@@ -11,7 +11,7 @@
         <label>Pilota 1:</label>
         <select name="pilota1" required>
             {% for p in piloti %}
-            <option value="{{ p }}">{{ p }}</option>
+            <option value="{{ p }}" {% if formazione and formazione["pilota1"] == p %}selected{% endif %}>{{ p }}</option>
             {% endfor %}
         </select>
         <br><br>
@@ -19,12 +19,12 @@
         <label>Pilota 2:</label>
         <select name="pilota2" required>
             {% for p in piloti %}
-            <option value="{{ p }}">{{ p }}</option>
+            <option value="{{ p }}" {% if formazione and formazione["pilota2"] == p %}selected{% endif %}>{{ p }}</option>
             {% endfor %}
         </select>
         <br><br>
 
-        <button type="submit">Conferma</button>
+        <button type="submit">💾 Salva formazione</button>
     </form>
 
     <p><a href="{{ url_for('index') }}">⬅ Torna alla home</a></p>
