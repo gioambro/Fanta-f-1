@@ -24,8 +24,7 @@
     <select name="sprint" id="sprint" onchange="toggleSprint()">
       <option value="no">No</option>
       <option value="si">Sì</option>
-    </select>
-    <br>
+    </select><br>
 
     <div id="sprint_pos_div" style="display:none;">
       <label>Posizione Sprint:</label>
@@ -44,87 +43,52 @@
     <br><hr>
 
     <h2>Bonus</h2>
-
     <label>Pole in qualifica GP (+2):</label>
-    <select name="pole">
-      <option value="no">No</option>
-      <option value="si">Sì</option>
-    </select><br>
+    <select name="pole"><option value="no">No</option><option value="si">Sì</option></select><br>
 
     <label>Giro veloce in gara (+1):</label>
-    <input type="checkbox" name="fastest_lap" class="fastest_lap"><br>
+    <select name="fastest_lap" class="fastest_lap"><option value="no">No</option><option value="si">Sì</option></select><br>
 
     <label>Driver of the Day (+1):</label>
-    <input type="checkbox" name="driver_day" class="driver_day"><br>
+    <select name="driver_day" class="driver_day"><option value="no">No</option><option value="si">Sì</option></select><br>
 
     <label>Fastest pit-stop (+2):</label>
-    <input type="checkbox" name="fastest_pit" class="fastest_pit"><br>
+    <select name="fastest_pit" class="fastest_pit"><option value="no">No</option><option value="si">Sì</option></select><br>
 
     <label>Parte dalle ultime due file ma va a punti (+2):</label>
-    <select name="rimonta">
-      <option value="no">No</option>
-      <option value="si">Sì</option>
-    </select><br>
+    <select name="rimonta"><option value="no">No</option><option value="si">Sì</option></select><br>
 
     <label>Posizioni guadagnate (+0,5 per posizione):</label>
-    <select name="pos_guadagnate">
-      <option value="no">No</option>
-      <option value="si">Sì</option>
-    </select><br>
+    <select name="pos_guadagnate"><option value="no">No</option><option value="si">Sì</option></select><br>
 
     <label>Vittoria GP (+3):</label>
-    <select name="vittoria">
-      <option value="no">No</option>
-      <option value="si">Sì</option>
-    </select><br>
+    <select name="vittoria"><option value="no">No</option><option value="si">Sì</option></select><br>
 
     <label>Podio GP (2°/3° posto) (+2):</label>
-    <select name="podio">
-      <option value="no">No</option>
-      <option value="si">Sì</option>
-    </select><br>
+    <select name="podio"><option value="no">No</option><option value="si">Sì</option></select><br>
 
     <br><hr>
     <h2>Malus</h2>
-
     <label>Squalifica (-5):</label>
-    <select name="squalifica">
-      <option value="no">No</option>
-      <option value="si">Sì</option>
-    </select><br>
+    <select name="squalifica"><option value="no">No</option><option value="si">Sì</option></select><br>
 
     <label>DNF (-3):</label>
-    <select name="dnf">
-      <option value="no">No</option>
-      <option value="si">Sì</option>
-    </select><br>
+    <select name="dnf"><option value="no">No</option><option value="si">Sì</option></select><br>
 
     <label>Penalità ≥ 6 secondi (-4):</label>
-    <select name="pen6">
-      <option value="no">No</option>
-      <option value="si">Sì</option>
-    </select><br>
+    <select name="pen6"><option value="no">No</option><option value="si">Sì</option></select><br>
 
     <label>Penalità ≤ 5 secondi (-3):</label>
-    <select name="pen5">
-      <option value="no">No</option>
-      <option value="si">Sì</option>
-    </select><br>
+    <select name="pen5"><option value="no">No</option><option value="si">Sì</option></select><br>
 
     <label>Ultimo in gara (-2):</label>
-    <input type="checkbox" name="last_place" class="last_place"><br>
+    <select name="last_place" class="last_place"><option value="no">No</option><option value="si">Sì</option></select><br>
 
     <label>Non supera il Q1 (-1):</label>
-    <select name="q1">
-      <option value="no">No</option>
-      <option value="si">Sì</option>
-    </select><br>
+    <select name="q1"><option value="no">No</option><option value="si">Sì</option></select><br>
 
     <label>Posizioni perse (-0,5 per posizione):</label>
-    <select name="pos_perse">
-      <option value="no">No</option>
-      <option value="si">Sì</option>
-    </select><br>
+    <select name="pos_perse"><option value="no">No</option><option value="si">Sì</option></select><br>
 
     <br><hr>
     <button type="submit">Salva risultati</button>
@@ -138,12 +102,12 @@
   }
 
   function enforceUniqueBonus(className, message) {
-    let checkboxes = document.querySelectorAll("." + className);
-    checkboxes.forEach(cb => {
-      cb.addEventListener("change", function() {
-        if (this.checked) {
-          checkboxes.forEach(other => {
-            if (other !== this) other.checked = false;
+    let selects = document.querySelectorAll("." + className);
+    selects.forEach(sel => {
+      sel.addEventListener("change", function() {
+        if (this.value === "si") {
+          selects.forEach(other => {
+            if (other !== this) other.value = "no";
           });
           alert(message);
         }
