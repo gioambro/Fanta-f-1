@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request
 
 app = Flask(__name__)
 
@@ -13,7 +13,6 @@ classifica_generale = {
     "Vodkaredbull": 2
 }
 
-# Variabile per le giornate
 giornata_n = 17  # parte da 17 perché ci sono già state 16 gare
 
 @app.route('/')
@@ -35,22 +34,29 @@ def inserisci():
             classifica_giornata[giocatore] = punti
             classifica_generale[giocatore] += punti
 
-        # Ordino la classifica generale per punteggio
-        classifica_generale_ordinata = dict(
-            sorted(classifica_generale.items(), key=lambda x: x[1], reverse=True)
-        )
-
         giornata_corrente = giornata_n
-        giornata_n += 1  # passo alla prossima gara
+        giornata_n += 1
 
         return render_template(
             "risultato.html",
             giornata=giornata_corrente,
             classifica_giornata=classifica_giornata,
-            classifica_generale=classifica_generale_ordinata
+            classifica_generale=ordina_classifica()
         )
 
     return render_template('inserisci.html', giocatori=giocatori)
+
+@app.route('/risultati')
+def risultati():
+    return render_template(
+        "risultato.html",
+        giornata=giornata_n - 1,
+        classifica_giornata=None,
+        classifica_generale=ordina_classifica()
+    )
+
+def ordina_classifica():
+    return dict(sorted(classifica_generale.items(), key=lambda x: x[1], reverse=True))
 
 if __name__ == '__main__':
     app.run(debug=True)
