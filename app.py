@@ -1,42 +1,35 @@
-<!DOCTYPE html>
-<html lang="it">
-<head>
-    <meta charset="UTF-8">
-    <title>Inserisci risultati della giornata</title>
-</head>
-<body>
-    <h1>Inserisci risultati della giornata</h1>
+from flask import Flask, render_template, request, redirect, url_for
 
-    <form method="POST">
-        <label for="squadra">Seleziona squadra:</label>
-        <select name="squadra" id="squadra" required>
-            <option value="Alfarumeno">Alfarumeno</option>
-            <option value="Stalloni">Stalloni</option>
-            <option value="WC in Geriatria">WC in Geriatria</option>
-            <option value="Strolling Around">Strolling Around</option>
-            <option value="Spartaboyz">Spartaboyz</option>
-            <option value="Vodkaredbull">Vodkaredbull</option>
-        </select>
+app = Flask(__name__)
 
-        <h2>Pilota 1</h2>
-        <label>Posizione partenza: <input type="number" name="partenza1" min="1" max="20"></label><br>
-        <label>Posizione arrivo: <input type="number" name="arrivo1" min="0" max="20"></label><br>
-        <label><input type="checkbox" name="giro_veloce1"> Giro veloce</label><br>
-        <label><input type="checkbox" name="ritiro1"> Ritiro</label><br>
-        <label><input type="checkbox" name="sprint1"> Sprint</label><br>
+# Punteggi iniziali dei giocatori
+punteggi = {
+    "Alfarumeno": 12,
+    "Stalloni": 10,
+    "WC in Geriatria": 10,
+    "Strolling Around": 5,
+    "Spartaboyz": 5,
+    "Vodkaredbull": 2
+}
 
-        <h2>Pilota 2</h2>
-        <label>Posizione partenza: <input type="number" name="partenza2" min="1" max="20"></label><br>
-        <label>Posizione arrivo: <input type="number" name="arrivo2" min="0" max="20"></label><br>
-        <label><input type="checkbox" name="giro_veloce2"> Giro veloce</label><br>
-        <label><input type="checkbox" name="ritiro2"> Ritiro</label><br>
-        <label><input type="checkbox" name="sprint2"> Sprint</label><br>
+@app.route("/")
+def index():
+    return render_template("index.html")
 
-        <br>
-        <button type="submit">Salva risultati</button>
-    </form>
+@app.route("/inserisci", methods=["GET", "POST"])
+def inserisci():
+    if request.method == "POST":
+        for giocatore in punteggi.keys():
+            punti_base = int(request.form.get(f"{giocatore}_punti", 0))
+            bonus = int(request.form.get(f"{giocatore}_bonus", 0))
+            malus = int(request.form.get(f"{giocatore}_malus", 0))
+            punteggi[giocatore] += punti_base + bonus - malus
+        return redirect(url_for("risultati"))
+    return render_template("inserisci.html", giocatori=punteggi.keys())
 
-    <br>
-    <a href="{{ url_for('index') }}">Torna alla home</a>
-</body>
-</html>
+@app.route("/risultati")
+def risultati():
+    return render_template("risultati.html", punteggi=punteggi)
+
+if __name__ == "__main__":
+    app.run(debug=True)
