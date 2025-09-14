@@ -2,22 +2,31 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <title>Classifica</title>
+    <title>Classifica generale</title>
 </head>
 <body>
-    <h1>Classifica Generale</h1>
-    <table border="1">
-        <tr>
-            <th>Giocatore</th>
-            <th>Punti</th>
-        </tr>
-        {% for giocatore, punti in giocatori.items() %}
-        <tr>
-            <td>{{ giocatore }}</td>
-            <td>{{ punti }}</td>
-        </tr>
-        {% endfor %}
+    <h1>Classifica generale</h1>
+
+    <table border="1" cellpadding="5" cellspacing="0">
+        <thead>
+            <tr>
+                <th>Posizione</th>
+                <th>Squadra</th>
+                <th>Punti totali</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for squadra, punti in classifica|dictsort(by='value', reverse=True) %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ squadra }}</td>
+                <td>{{ punti }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
     </table>
+
+    <br>
     <a href="{{ url_for('index') }}">Torna alla home</a>
 </body>
 </html>
