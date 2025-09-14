@@ -1,83 +1,23 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <meta charset="UTF-8">
-    <title>Inserisci Formazione - Fanta F1</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <style>
-        body {
-            background-color: #121212;
-            font-family: Arial, sans-serif;
-            color: #f0f0f0;
-            padding: 20px;
-            text-align: center;
-        }
-
-        h1 {
-            color: #ff0000;
-        }
-
-        .form-container {
-            background: #1e1e1e;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0px 0px 15px rgba(255, 0, 0, 0.4);
-            margin: auto;
-            width: 400px;
-            text-align: center;
-        }
-
-        input, select {
-            width: 90%;
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 5px;
-            border: none;
-        }
-
-        button {
-            background: #ff0000;
-            color: white;
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            width: 95%;
-            font-weight: bold;
-            margin-top: 10px;
-        }
-
-        button:hover {
-            background: #cc0000;
-        }
-
-        a {
-            display: inline-block;
-            margin-top: 15px;
-            color: #ff0000;
-            text-decoration: none;
-        }
-
-        a:hover {
-            text-decoration: underline;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Inserisci Formazione</title>
 </head>
 <body>
-    <h1>Inserisci Formazione</h1>
-    <p>Giocatore: <strong>{{ user }}</strong></p>
+  <h1>Inserisci i tuoi 2 piloti</h1>
+  <p>Giocatore: <strong>{{ user }}</strong></p>
 
-    <div class="form-container">
-        <form method="POST" action="/inserisci">
-            <!-- esempio campi, poi li adattiamo ai dati veri -->
-            <input type="text" name="pilota1" placeholder="Pilota 1" required>
-            <input type="text" name="pilota2" placeholder="Pilota 2" required>
-            <input type="text" name="pilota3" placeholder="Pilota 3" required>
-            <input type="text" name="pilota4" placeholder="Pilota 4" required>
-            <input type="text" name="pilota5" placeholder="Pilota 5" required>
-            <button type="submit">Salva Formazione</button>
-        </form>
-        <a href="{{ url_for('index') }}">⬅ Torna alla Home</a>
-    </div>
+  <form method="post">
+    <label>Pilota 1:</label>
+    <input type="text" name="pilota1" value="{{ formazione[0] if formazione|length > 0 else '' }}" required><br><br>
+
+    <label>Pilota 2:</label>
+    <input type="text" name="pilota2" value="{{ formazione[1] if formazione|length > 1 else '' }}" required><br><br>
+
+    <button type="submit">Salva Formazione</button>
+  </form>
+
+  <p><a href="{{ url_for('index') }}">⬅ Torna alla Home</a></p>
 </body>
 </html>
