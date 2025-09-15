@@ -46,6 +46,7 @@ def login():
 
         conn = get_db()
         cur = conn.cursor()
+        # 👇 CORRETTO: passo username come tupla
         cur.execute("SELECT * FROM users WHERE username = ?", (username,))
         user = cur.fetchone()
         conn.close()
