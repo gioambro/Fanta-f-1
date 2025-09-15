@@ -2,43 +2,10 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <title>Home - Fanta F1</title>
+    <title>Fanta F1 - Home</title>
 </head>
 <body>
-    {% if user %}
-        <h1>Benvenuto, {{ user }}!</h1>
-        <p>Ruolo: {{ role }}</p>
-
-        <p><a href="{{ url_for('logout') }}">🚪 Logout</a></p>
-        <p><a href="{{ url_for('cambia_password') }}">🔑 Cambia password</a></p>
-
-        {% if role == "player" %}
-            <p><a href="{{ url_for('inserisci') }}">🏎️ Inserisci/Modifica la tua formazione</a></p>
-        {% endif %}
-
-        {% if role == "admin" %}
-            <p><a href="{{ url_for('admin') }}">⚙️ Gestione utenti</a></p>
-        {% endif %}
-
-        <h2>📋 Formazioni dei giocatori</h2>
-        <table border="1" cellpadding="5">
-            <tr>
-                <th>Giocatore</th>
-                <th>Pilota 1</th>
-                <th>Pilota 2</th>
-            </tr>
-            {% for f in formazioni %}
-            <tr>
-                <td>{{ f["username"] }}</td>
-                <td>{{ f["pilota1"] or "-" }}</td>
-                <td>{{ f["pilota2"] or "-" }}</td>
-            </tr>
-            {% endfor %}
-        </table>
-
-    {% else %}
-        <h1>Benvenuto su Fanta F1!</h1>
-        <p><a href="{{ url_for('login') }}">🔑 Accedi</a></p>
-    {% endif %}
+    <h1>🏎️ Benvenuto su Fanta Formula 1</h1>
+    <p><a href="/login">➡️ Vai al Login</a></p>
 </body>
 </html>
