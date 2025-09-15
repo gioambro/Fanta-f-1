@@ -1,39 +1,41 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, session, url_for
 import sqlite3
+from werkzeug.security import check_password_hash
 import os
 
 app = Flask(__name__)
-app.secret_key = "supersegreto"
-DB_NAME = "database.db"
+app.secret_key = os.environ.get("SECRET_KEY", "supersecretkey")
 
 
-def init_db():
-    conn = sqlite3.connect(DB_NAME)
-    cur = conn.cursor()
-    cur.execute('''CREATE TABLE IF NOT EXISTS users (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    username TEXT UNIQUE NOT NULL,
-                    password TEXT NOT NULL)''')
-
-    # se il DB è vuoto, inseriamo utenti di test
-    cur.execute("SELECT COUNT(*) FROM users")
-    if cur.fetchone()[0] == 0:
-        cur.execute("INSERT INTO users (username, password) VALUES (?, ?)", ("admin", "admin"))
-        cur.execute("INSERT INTO users (username, password) VALUES (?, ?)", ("user", "1234"))
-
-    conn.commit()
-    conn.close()
+DB_FILE = "users.db"
 
 
-@app.before_request
-def before_request():
-    # assicura che il DB esista prima di ogni richiesta
-    init_db()
+def get_db():
+    conn = sqlite3.connect(DB_FILE)
+    conn.row_factory = sqlite3.Row
+    return conn
 
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    if "username" not in session:
+        return redirect(url_for("login"))
+
+    username = session["username"]
+
+    conn = get_db()
+    cur = conn.cursor()
+
+    # Prendi i piloti del giocatore loggato
+    cur.execute("SELECT driver1, driver2, driver3 FROM players WHERE username = ?", (username,))
+    row = cur.fetchone()
+    conn.close()
+
+    drivers = []
+    if row:
+        drivers = [row["driver1"], row["driver2"], row["driver3"]]
+
+    return render_template("index.html", username=username, drivers=drivers)
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -42,35 +44,26 @@ def login():
         username = request.form["username"]
         password = request.form["password"]
 
-        conn = sqlite3.connect(DB_NAME)
+        conn = get_db()
         cur = conn.cursor()
-        cur.execute("SELECT * FROM users WHERE username=? AND password=?", (username, password))
+        cur.execute("SELECT * FROM users WHERE username = ?", (username,))
         user = cur.fetchone()
         conn.close()
 
-        if user:
+        if user and check_password_hash(user["password"], password):
             session["username"] = username
-            return redirect(url_for("dashboard"))
+            return redirect(url_for("index"))
         else:
-            return "❌ Credenziali errate"
+            return render_template("login.html", error="Credenziali non valide")
 
     return render_template("login.html")
 
 
-@app.route("/dashboard")
-def dashboard():
-    if "username" in session:
-        return f"✅ Benvenuto, {session['username']}! <br><a href='/logout'>Logout</a>"
-    else:
-        return redirect(url_for("login"))
-
-
 @app.route("/logout")
 def logout():
-    session.pop("username", None)
-    return redirect(url_for("index"))
+    session.clear()
+    return redirect(url_for("login"))
 
 
 if __name__ == "__main__":
-    init_db()
     app.run(host="0.0.0.0", port=5000)
