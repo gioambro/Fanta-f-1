@@ -1,40 +1,34 @@
-import sqlite3
 from flask import Flask, render_template, request, redirect, url_for, session
-from werkzeug.security import check_password_hash
+import sqlite3
 import os
 
 app = Flask(__name__)
-app.secret_key = os.getenv("SECRET_KEY", "dev_secret_key")
+app.secret_key = "supersegreto"  # cambia se vuoi più sicurezza
 
-DB_FILE = "users.db"
+DB_NAME = "database.db"
 
 
-def get_db():
-    conn = sqlite3.connect(DB_FILE)
-    conn.row_factory = sqlite3.Row  # 👈 fondamentale per accedere con f["username"]
-    return conn
+# 🔹 Funzione che crea il DB se non esiste
+def init_db():
+    if not os.path.exists(DB_NAME):
+        conn = sqlite3.connect(DB_NAME)
+        cur = conn.cursor()
+        cur.execute('''CREATE TABLE users (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        username TEXT UNIQUE NOT NULL,
+                        password TEXT NOT NULL)''')
+
+        # inseriamo un utente di test
+        cur.execute("INSERT INTO users (username, password) VALUES (?, ?)", ("admin", "admin"))
+        cur.execute("INSERT INTO users (username, password) VALUES (?, ?)", ("user", "1234"))
+
+        conn.commit()
+        conn.close()
 
 
 @app.route("/")
 def index():
-    conn = get_db()
-    cur = conn.cursor()
-
-    try:
-        cur.execute("SELECT * FROM formazioni")
-        formazioni = cur.fetchall()
-    except sqlite3.OperationalError:
-        # Se la tabella non esiste ancora
-        formazioni = []
-
-    conn.close()
-
-    return render_template(
-        "index.html",
-        user=session.get("username"),
-        role=session.get("role"),
-        formazioni=formazioni,
-    )
+    return render_template("index.html")
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -43,27 +37,35 @@ def login():
         username = request.form["username"]
         password = request.form["password"]
 
-        conn = get_db()
+        conn = sqlite3.connect(DB_NAME)
         cur = conn.cursor()
-        cur.execute("SELECT * FROM users WHERE username = ?", (username,))
+        cur.execute("SELECT * FROM users WHERE username=? AND password=?", (username, password))
         user = cur.fetchone()
         conn.close()
 
-        if user and check_password_hash(user["password"], password):
-            session["username"] = user["username"]
-            session["role"] = user["role"]
-            return redirect(url_for("index"))
+        if user:
+            session["username"] = username
+            return redirect(url_for("dashboard"))
         else:
-            return "❌ Username o password errati"
+            return "❌ Credenziali errate"
 
     return render_template("login.html")
 
 
+@app.route("/dashboard")
+def dashboard():
+    if "username" in session:
+        return f"✅ Benvenuto, {session['username']}! <br><a href='/logout'>Logout</a>"
+    else:
+        return redirect(url_for("login"))
+
+
 @app.route("/logout")
 def logout():
-    session.clear()
+    session.pop("username", None)
     return redirect(url_for("index"))
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    init_db()
+    app.run(host="0.0.0.0", port=5000)
