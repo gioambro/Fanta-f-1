@@ -3,27 +3,32 @@ import sqlite3
 import os
 
 app = Flask(__name__)
-app.secret_key = "supersegreto"  # cambia se vuoi più sicurezza
-
+app.secret_key = "supersegreto"
 DB_NAME = "database.db"
 
 
-# 🔹 Funzione che crea il DB se non esiste
 def init_db():
-    if not os.path.exists(DB_NAME):
-        conn = sqlite3.connect(DB_NAME)
-        cur = conn.cursor()
-        cur.execute('''CREATE TABLE users (
-                        id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        username TEXT UNIQUE NOT NULL,
-                        password TEXT NOT NULL)''')
+    conn = sqlite3.connect(DB_NAME)
+    cur = conn.cursor()
+    cur.execute('''CREATE TABLE IF NOT EXISTS users (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    username TEXT UNIQUE NOT NULL,
+                    password TEXT NOT NULL)''')
 
-        # inseriamo un utente di test
+    # se il DB è vuoto, inseriamo utenti di test
+    cur.execute("SELECT COUNT(*) FROM users")
+    if cur.fetchone()[0] == 0:
         cur.execute("INSERT INTO users (username, password) VALUES (?, ?)", ("admin", "admin"))
         cur.execute("INSERT INTO users (username, password) VALUES (?, ?)", ("user", "1234"))
 
-        conn.commit()
-        conn.close()
+    conn.commit()
+    conn.close()
+
+
+@app.before_request
+def before_request():
+    # assicura che il DB esista prima di ogni richiesta
+    init_db()
 
 
 @app.route("/")
