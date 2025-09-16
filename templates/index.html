@@ -1,18 +1,77 @@
 <!DOCTYPE html>
-<html>
+<html lang="it">
 <head>
-    <title>Dashboard - Fanta F1</title>
+    <meta charset="UTF-8">
+    <title>Fanta F1 - Home</title>
+    <style>
+        body {
+            background-color: #121212;
+            color: #f1f1f1;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        header {
+            background: #e10600;
+            padding: 15px;
+            text-align: center;
+            border-radius: 8px;
+        }
+        header h1 {
+            margin: 0;
+            color: white;
+        }
+        .content {
+            margin-top: 20px;
+            background: #1e1e1e;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        .logout {
+            text-align: right;
+        }
+        .logout a {
+            color: white;
+            background: #e10600;
+            padding: 8px 12px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .drivers {
+            margin-top: 15px;
+            padding: 15px;
+            background: #2b2b2b;
+            border-radius: 8px;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+    </style>
 </head>
 <body>
-    <h1>Benvenuto {{ username }}</h1>
+    <header>
+        <h1>Benvenuto {{ username }} 👋</h1>
+    </header>
 
-    <h2>I tuoi piloti</h2>
-    <ul>
-        {% for driver in drivers %}
-            <li>{{ driver }}</li>
-        {% endfor %}
-    </ul>
+    <div class="logout">
+        <a href="{{ url_for('logout') }}">Logout</a>
+    </div>
 
-    <a href="{{ url_for('logout') }}">Logout</a>
+    <div class="content">
+        <h2>I tuoi piloti</h2>
+        <div class="drivers">
+            {% if drivers %}
+                <ul>
+                    {% for d in drivers %}
+                        <li>{{ d }}</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>Nessun pilota assegnato.</p>
+            {% endif %}
+        </div>
+    </div>
 </body>
 </html>
