@@ -1,60 +1,183 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 import sqlite3
+import os
 from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
-app.secret_key = "supersecretkey"  # Cambiala con una stringa a caso per sicurezza
+app.secret_key = "supersecretkey"  # Cambialo in produzione!
 
-DB_NAME = "fanta.db"
+DB_FILE = "users.db"
 
+# -----------------------------
+# Inizializzazione automatica DB
+# -----------------------------
+def init_db():
+    conn = sqlite3.connect(DB_FILE)
+    cur = conn.cursor()
+
+    # Crea tabella users se non esiste
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT UNIQUE NOT NULL,
+            password TEXT NOT NULL,
+            role TEXT NOT NULL
+        )
+    """)
+
+    # Giocatori iniziali
+    utenti = [
+        ("admin", "1234", "admin"),
+        ("Alfarumeno", "1234", "player"),
+        ("Stalloni", "1234", "player"),
+        ("WC in Geriatria", "1234", "player"),
+        ("Strolling Around", "1234", "player"),
+        ("Spartaboyz", "1234", "player"),
+        ("Vodkaredbull", "1234", "player"),
+    ]
+
+    # Inserisci solo se non esistono già
+    for username, pwd, role in utenti:
+        cur.execute("SELECT * FROM users WHERE username = ?", (username,))
+        if not cur.fetchone():
+            cur.execute("INSERT INTO users (username, password, role) VALUES (?, ?, ?)",
+                        (username, generate_password_hash(pwd), role))
+
+    conn.commit()
+    conn.close()
+
+# All’avvio: controlla se DB esiste
+if not os.path.exists(DB_FILE):
+    init_db()
+
+# -----------------------------
+# Utility database
+# -----------------------------
 def get_db():
-    conn = sqlite3.connect(DB_NAME)
+    conn = sqlite3.connect(DB_FILE)
     conn.row_factory = sqlite3.Row
     return conn
 
-@app.route("/")
-def index():
-    if "username" not in session:
-        return redirect(url_for("login"))
-
-    username = session["username"]
-
+def get_user(username):
     conn = get_db()
     cur = conn.cursor()
-    cur.execute("SELECT driver1, driver2, driver3 FROM users WHERE username = ?", (username,))
-    row = cur.fetchone()
+    cur.execute("SELECT * FROM users WHERE username = ?", (username,))
+    user = cur.fetchone()
     conn.close()
+    return user
 
-    drivers = []
-    if row:
-        drivers = [row["driver1"], row["driver2"], row["driver3"]]
-
-    return render_template("index.html", username=username, drivers=drivers)
-
+# -----------------------------
+# Rotte di autenticazione
+# -----------------------------
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
 
-        conn = get_db()
-        cur = conn.cursor()
-        cur.execute("SELECT * FROM users WHERE username = ?", (username,))
-        user = cur.fetchone()
-        conn.close()
-
+        user = get_user(username)
         if user and check_password_hash(user["password"], password):
-            session["username"] = username
+            session["username"] = user["username"]
+            session["role"] = user["role"]
+            flash("Login effettuato con successo!", "success")
             return redirect(url_for("index"))
         else:
-            return render_template("login.html", error="Credenziali non valide")
-
+            flash("Credenziali errate!", "danger")
     return render_template("login.html")
 
 @app.route("/logout")
 def logout():
     session.clear()
+    flash("Logout effettuato", "info")
     return redirect(url_for("login"))
 
+# -----------------------------
+# Cambio password
+# -----------------------------
+@app.route("/cambia_password", methods=["GET", "POST"])
+def cambia_password():
+    if "username" not in session:
+        return redirect(url_for("login"))
+
+    if request.method == "POST":
+        old = request.form["old_password"]
+        new = request.form["new_password"]
+
+        user = get_user(session["username"])
+        if user and check_password_hash(user["password"], old):
+            conn = get_db()
+            cur = conn.cursor()
+            cur.execute("UPDATE users SET password = ? WHERE username = ?",
+                        (generate_password_hash(new), session["username"]))
+            conn.commit()
+            conn.close()
+            flash("Password aggiornata con successo!", "success")
+            return redirect(url_for("index"))
+        else:
+            flash("Password attuale errata", "danger")
+
+    return render_template("change_password.html")
+
+# -----------------------------
+# Home e pannello admin
+# -----------------------------
+@app.route("/")
+def index():
+    return render_template("index.html", user=session.get("username"), role=session.get("role"))
+
+@app.route("/admin", methods=["GET", "POST"])
+def admin():
+    if session.get("role") != "admin":
+        flash("Accesso negato!", "danger")
+        return redirect(url_for("index"))
+
+    conn = get_db()
+    cur = conn.cursor()
+
+    if request.method == "POST":
+        action = request.form["action"]
+
+        if action == "add":
+            username = request.form["username"]
+            password = request.form["password"]
+            role = request.form["role"]
+            cur.execute("INSERT INTO users (username, password, role) VALUES (?, ?, ?)",
+                        (username, generate_password_hash(password), role))
+            conn.commit()
+            flash("Utente aggiunto!", "success")
+
+        elif action == "delete":
+            username = request.form["username"]
+            if username != "admin":  # Non eliminare admin
+                cur.execute("DELETE FROM users WHERE username = ?", (username,))
+                conn.commit()
+                flash("Utente eliminato!", "warning")
+
+        elif action == "reset":
+            username = request.form["username"]
+            newpass = request.form["new_password"]
+            cur.execute("UPDATE users SET password = ? WHERE username = ?",
+                        (generate_password_hash(newpass), username))
+            conn.commit()
+            flash("Password resettata!", "info")
+
+    cur.execute("SELECT username, role FROM users")
+    users = cur.fetchall()
+    conn.close()
+
+    return render_template("admin.html", users=users)
+
+# -----------------------------
+# Inserimento risultati (bozza)
+# -----------------------------
+@app.route("/inserisci")
+def inserisci():
+    if "username" not in session:
+        return redirect(url_for("login"))
+    return render_template("inserisci.html", user=session["username"])
+
+# -----------------------------
+# Avvio
+# -----------------------------
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    app.run(debug=True)
