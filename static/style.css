@@ -1,73 +1,65 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #121212;
-    color: #e0e0e0;
+    background-color: #222;
+    color: #eee;
+    text-align: center;
     margin: 0;
     padding: 0;
 }
 
-nav {
-    background: #1e1e1e;
-    padding: 10px;
+.container {
+    background: #333;
+    padding: 20px;
+    margin: 40px auto;
+    width: 400px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px #000;
 }
 
-nav a {
-    color: #e0e0e0;
-    margin-right: 15px;
-    text-decoration: none;
-}
-
-nav a:hover {
+h2, h3 {
     color: #ffcc00;
 }
 
-main {
-    padding: 20px;
+a {
+    color: #66ccff;
+    text-decoration: none;
 }
 
-form {
-    margin: 15px 0;
-    padding: 10px;
-    background: #1e1e1e;
-    border-radius: 5px;
-}
-
-label {
-    display: block;
-    margin-top: 10px;
+a:hover {
+    text-decoration: underline;
 }
 
 input, select, button {
-    margin-top: 5px;
+    margin: 5px;
     padding: 8px;
-    width: 100%;
+    width: 90%;
     border: none;
-    border-radius: 3px;
+    border-radius: 5px;
 }
 
 button {
-    background: #ffcc00;
+    background-color: #ffcc00;
     color: #000;
     cursor: pointer;
-    margin-top: 10px;
+    font-weight: bold;
 }
 
 button:hover {
-    background: #ffaa00;
+    background-color: #ffaa00;
 }
 
 .flashes {
-    list-style-type: none;
+    list-style: none;
     padding: 0;
 }
 
 .flashes li {
     margin: 5px 0;
-    padding: 10px;
-    border-radius: 3px;
+    padding: 8px;
+    border-radius: 5px;
 }
 
-.flashes .success { background: #2e7d32; color: white; }
-.flashes .danger { background: #c62828; color: white; }
-.flashes .info { background: #0277bd; color: white; }
-.flashes .warning { background: #f9a825; color: black; }
+.success { background: #4caf50; color: white; }
+.danger { background: #f44336; color: white; }
+.warning { background: #ff9800; color: white; }
+.info    { background: #2196f3; color: white; }
